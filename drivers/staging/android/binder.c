@@ -2783,7 +2783,7 @@ static int binder_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 static struct vm_operations_struct binder_vm_ops = {
 	.open = binder_vma_open,
 	.close = binder_vma_close,
-	.fault = binder_vm_fault, 
+	.fault = binder_vm_fault,
 };
 
 static int binder_mmap(struct file *filp, struct vm_area_struct *vma)
