@@ -541,13 +541,12 @@ static int c_show(struct seq_file *m, void *v)
 		seq_printf(m, "wp half thumb fastmult vfp edsp neon vfpv3 tlsi ");
 		seq_printf(m, "vfpv4 idiva idivt ");
 	}
-#endif
-
-	seq_printf(m, "\nCPU implementer\t: 0x%02x\n", read_cpuid_id() >> 24);
-	seq_printf(m, "CPU architecture: %s\n",
-#if IS_ENABLED(CONFIG_ARMV7_COMPAT_CPUINFO)
-			is_compat_task() ? "8" :
-#endif
+ #endif
+  		seq_printf(m, "CPU implementer\t: 0x%02x\n", (midr >> 24));
+		seq_printf(m, "CPU architecture: %s\n",
+  #if IS_ENABLED(CONFIG_ARMV7_COMPAT_CPUINFO)
+  			   is_compat_task() ? "8" :
+  #endif
 			"AArch64");
 	seq_printf(m, "CPU variant\t: 0x%x\n", (read_cpuid_id() >> 20) & 15);
 	seq_printf(m, "CPU part\t: 0x%03x\n", (read_cpuid_id() >> 4) & 0xfff);

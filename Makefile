@@ -195,7 +195,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 #ARCH		?= $(SUBARCH)
 #CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
 ARCH            ?= arm64
-CROSS_COMPILE   ?= /home/geiti94/android/toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+CROSS_COMPILE   ?= /home/geiti94/android/toolchain/aarch64-sabermod-7.0/bin/aarch64-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -384,12 +384,12 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
+		   -Wno-format-security -Wno-logical-not-parentheses \
 		   -fno-delete-null-pointer-checks \
-		   -fdiagnostics-show-option -Werror
 		   -fno-diagnostics-show-caret -fno-pic \
 		   -Wno-unused-variable \
-		   -Wno-maybe-uninitialized \
+		   -mtune=cortex-a57.cortex-a53 \
+		   -std=gnu89
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=

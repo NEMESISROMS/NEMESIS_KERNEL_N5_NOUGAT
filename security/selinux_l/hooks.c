@@ -108,7 +108,7 @@ static inline unsigned int cmp_sec_integrity(void)
 			(current->mm->pgd != current->cred->bp_pgd)));
 			
 }
-inline void rkp_print_debug(void)
+static inline void rkp_print_debug(void)
 {
 	u64 pgd;
 	struct cred *cred;
