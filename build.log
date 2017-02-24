@@ -11,29 +11,350 @@ rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/ar
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-dtb': No such file or directory
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-zImage': No such file or directory
 Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
-arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:335:warning: override: reassigning to symbol RKP_KDP
-arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:679:warning: override: reassigning to symbol MPTCP
+arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:336:warning: override: reassigning to symbol RKP_KDP
+arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:680:warning: override: reassigning to symbol MPTCP
 #
 # configuration written to .config
 #
 scripts/kconfig/conf --silentoldconfig Kconfig
 Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
-INFO: CC is /home/geiti94/android/toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-gcc
+INFO: CC is /home/geiti94/android/toolchain/aarch64-sabermod-7.0/bin/aarch64-gcc
   CHK     include/generated/uapi/linux/version.h
   CHK     include/generated/utsrelease.h
   CC      scripts/mod/devicetable-offsets.s
-  CALL    scripts/checksyscalls.sh
   GEN     scripts/mod/devicetable-offsets.h
   HOSTCC  scripts/mod/file2alias.o
+  CALL    scripts/checksyscalls.sh
   HOSTLD  scripts/mod/modpost
   CHK     include/generated/compile.h
 make[1]: Nothing to be done for 'dtbs'.
+  CC      drivers/sensorhub/brcm/ssp_dev.o
+  CC      drivers/soc/samsung/exynos-chipid.o
+  CC      drivers/sensorhub/brcm/ssp_i2c.o
+  CC      drivers/spi/spi.o
+  CC      drivers/spi/spi-s3c64xx.o
+  CC      drivers/staging/staging.o
+  LD      drivers/soc/samsung/built-in.o
+  LD      drivers/soc/built-in.o
+  CC      drivers/staging/samsung/sec_notifier/vbus_notifier.o
+  CC      drivers/switch/switch_class.o
+  LD      drivers/staging/samsung/sec_notifier/built-in.o
+  CC      drivers/thermal/thermal_core.o
+  CC      drivers/staging/android/ion/ion.o
+  CC      drivers/switch/switch_antenna.o
+  CC      drivers/sensorhub/brcm/ssp_data.o
+  CC      drivers/trace/exynos-noc.o
+  CC      drivers/sensorhub/brcm/ssp_sysfs.o
+  CC      drivers/staging/android/binder.o
+  CC      drivers/switch/switch-arizona.o
+  CC      drivers/trace/exynos-ss.o
+  LD      drivers/spi/built-in.o
+  CC      drivers/tty/tty_io.o
+  CC      drivers/tty/n_tty.o
+  CC      drivers/thermal/thermal_hwmon.o
+  CC      drivers/sensorhub/brcm/ssp_input.o
+  CC      drivers/thermal/of-thermal.o
+In file included from include/linux/thermal.h:28:0,
+                 from drivers/thermal/of-thermal.c:25:
+drivers/thermal/of-thermal.c: In function 'thermal_of_build_thermal_zone':
+include/linux/of.h:211:2: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
+drivers/thermal/of-thermal.c:715:2: note: in expansion of macro 'for_each_child_of_node'
+drivers/thermal/of-thermal.c:718:3: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'for'
+  CC      drivers/trace/exynos-coresight.o
+  CC      drivers/thermal/step_wise.o
+  CC      drivers/thermal/cpu_cooling.o
+  CC      drivers/tty/tty_ioctl.o
+  CC      drivers/staging/android/ion/ion_heap.o
+  LD      drivers/trace/built-in.o
+  CC      drivers/sensorhub/brcm/ssp_firmware.o
+  CC      drivers/usb/class/cdc-acm.o
+  LD      drivers/switch/built-in.o
+  CC      drivers/video/fb_notify.o
+  CC      drivers/thermal/exynos7420_thermal.o
+  CC      drivers/video/fbmem.o
+  CC      drivers/sensorhub/brcm/ssp_debug.o
+  CC      drivers/staging/android/ion/ion_page_pool.o
+  CC      drivers/video/fbmon.o
+  CC      drivers/tty/tty_ldisc.o
+  CC      drivers/staging/android/ion/ion_system_heap.o
+  CC      drivers/sensorhub/brcm/sensors_core.o
+  CC      drivers/sensorhub/brcm/ssp_iio_ring.o
+  CC      drivers/usb/class/usblp.o
+  CC      drivers/tty/tty_buffer.o
+  CC      drivers/video/fbcmap.o
+  CC      drivers/thermal/cal_tmu7420.o
+  CC      drivers/sensorhub/brcm/ssp_iio_trigger.o
+  CC      drivers/staging/android/ion/ion_carveout_heap.o
+  CC      drivers/thermal/ipa.o
+  CC      drivers/tty/tty_port.o
+  CC      drivers/video/fbsysfs.o
+  CC      drivers/sensorhub/brcm/factory/accel_k6ds3tr.o
+  CC      drivers/video/modedb.o
+  CC      drivers/staging/android/ion/ion_chunk_heap.o
+  LD      drivers/usb/class/built-in.o
+  CC      drivers/usb/core/usb.o
+  CC      drivers/tty/tty_mutex.o
+  CC      drivers/sensorhub/brcm/factory/gyro_k6ds3tr.o
+  CC      drivers/video/fbcvt.o
+  CC      drivers/staging/android/ion/ion_cma_heap.o
+  CC      drivers/staging/android/ashmem.o
+  CC      drivers/video/backlight/lcd.o
+  CC      drivers/tty/tty_ldsem.o
+  CC      drivers/usb/core/hub.o
+  LD      drivers/thermal/thermal_sys.o
+  LD      drivers/thermal/built-in.o
+  CC      drivers/video/backlight/backlight.o
+  CC      drivers/video/console/dummycon.o
+  CC      drivers/staging/android/ion/ion_test.o
+  CC      drivers/staging/android/ion/compat_ion.o
+  CC      drivers/sensorhub/brcm/factory/magnetic_yas537.o
+  CC      drivers/tty/pty.o
+  CC      drivers/sensorhub/brcm/factory/light_tmg399x.o
+  LD      drivers/video/console/built-in.o
+  CC      drivers/video/exynos/exynos_mipi_dsi.o
+  CC      drivers/video/backlight/generic_bl.o
+  CC      drivers/video/exynos/exynos_mipi_dsi_common.o
+  CC      drivers/sensorhub/brcm/factory/prox_tmg399x.o
+  CC      drivers/staging/android/ion/exynos/exynos_ion_v2.o
+  CC      drivers/tty/tty_audit.o
+  LD      drivers/video/backlight/built-in.o
+  CC      drivers/sensorhub/brcm/factory/gesture_tmg399x.o
+  LD      drivers/video/omap2/displays/built-in.o
+  LD      drivers/video/omap2/built-in.o
+  CC      drivers/video/cfbfillrect.o
+  CC      drivers/video/exynos/exynos_mipi_dsi_lowlevel.o
+  CC      drivers/video/exynos/decon/panels/dsim_panel.o
+  CC      drivers/tty/sysrq.o
+  CC      drivers/video/exynos/decon/vpp/vpp_drv.o
+  CC      drivers/sensorhub/brcm/factory/irled_tmd4903.o
+  CC      drivers/video/cfbcopyarea.o
+  LD      drivers/staging/android/ion/exynos/built-in.o
+  LD      drivers/staging/android/ion/built-in.o
+  CC      drivers/staging/android/timed_output.o
+  LD      drivers/video/exynos/panels/built-in.o
+  CC      drivers/video/cfbimgblt.o
+  CC      drivers/sensorhub/brcm/factory/pressure_lps25h.o
+  CC      drivers/video/simplefb.o
+  CC      drivers/video/exynos/decon/panels/dimming_core.o
+  CC      drivers/staging/android/lowmemorykiller.o
+  LD      drivers/tty/ipwireless/built-in.o
+  CC      drivers/tty/serial/serial_core.o
+  CC      drivers/staging/android/alarm-dev.o
+  LD      drivers/video/fb.o
+  CC      drivers/tty/serial/samsung.o
+  CC      drivers/sensorhub/brcm/factory/barcode_emul_tmg3992.o
+  CC      drivers/staging/android/sync.o
+  CC      drivers/video/exynos/decon/vpp/vpp_regs.o
+  CC      drivers/video/exynos/decon/panels/mdnie_lite.o
+  CC      drivers/usb/core/hcd.o
+  CC      drivers/staging/android/sw_sync.o
+  CC      drivers/sensorhub/brcm/ssp_sensorhub.o
+  CC      drivers/video/exynos/decon/vpp/vpp_coef.o
+  CC      drivers/usb/core/urb.o
+  CC      drivers/video/exynos/decon/panels/mdnie_tuning.o
+  CC      drivers/video/exynos/decon/panels/lcd_sysfs.o
+  LD      drivers/video/exynos/decon/vpp/vpp.o
+  LD      drivers/video/exynos/decon/vpp/built-in.o
+  LD      drivers/tty/serial/built-in.o
+  CC      drivers/video/exynos/decon/panels/s6e3ha3_s6e3ha2_wqhd_lcd_ctrl.o
+  LD      drivers/staging/android/built-in.o
+  CC      drivers/tty/vt/vt_ioctl.o
+  LD      drivers/staging/iio/accel/built-in.o
+  LD      drivers/staging/iio/adc/built-in.o
+  CC      drivers/sensorhub/brcm/ssp_misc.o
+  LD      drivers/staging/iio/addac/built-in.o
+  LD      drivers/staging/iio/cdc/built-in.o
+  LD      drivers/staging/iio/frequency/built-in.o
+  LD      drivers/staging/iio/gyro/built-in.o
+  LD      drivers/staging/iio/impedance-analyzer/built-in.o
+  LD      drivers/staging/iio/light/built-in.o
+  CC      drivers/usb/core/message.o
+  LD      drivers/staging/iio/magnetometer/built-in.o
+  CC      drivers/video/exynos/decon/panels/dsim_backlight_dynamic.o
+  LD      drivers/staging/iio/meter/built-in.o
+  LD      drivers/staging/iio/resolver/built-in.o
+  LD      drivers/staging/iio/trigger/built-in.o
+  LD      drivers/staging/iio/built-in.o
+  LD      drivers/staging/media/built-in.o
+  CC      drivers/staging/samsung/sec_batt.o
+  CC      drivers/usb/core/driver.o
+  CC      drivers/sensorhub/brcm/max86902.o
+drivers/video/exynos/decon/panels/dsim_backlight_dynamic.c: In function 'dsim_panel_set_brightness':
+drivers/video/exynos/decon/panels/dsim_backlight_dynamic.c:546:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+drivers/video/exynos/decon/panels/dsim_backlight_dynamic.c:549:4: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+  CC      drivers/staging/samsung/sec_log.o
+  LD      drivers/staging/silicom/built-in.o
+  CC      drivers/staging/vnswap/vnswap.o
+  CC      drivers/tty/vt/vc_screen.o
+  CC      drivers/tty/vt/selection.o
+  CC      drivers/staging/samsung/sec_sysfs.o
+  CC      drivers/usb/core/config.o
+  CC      drivers/tty/vt/keyboard.o
+  CC      drivers/staging/vnswap/vnswap_sysfs.o
+  CC      drivers/tty/vt/consolemap.o
+  CC      drivers/staging/samsung/sec_reboot.o
+  CONMK   drivers/tty/vt/consolemap_deftbl.c
+  CC      drivers/tty/vt/vt.o
+  LD      drivers/staging/vnswap/built-in.o
+  CC      drivers/staging/samsung/sec_debug.o
+  LD      drivers/video/exynos/decon/panels/built-in.o
   CC      drivers/video/exynos/decon/decon_core.o
+  CC      drivers/staging/samsung/sec_getlog.o
+  SHIPPED drivers/tty/vt/defkeymap.c
+  CC      drivers/usb/dwc3/core.o
+  CC      drivers/usb/core/file.o
+  CC      drivers/staging/samsung/sec_gaf.o
+  CC      drivers/staging/samsung/sec_misc.o
+  CC      drivers/usb/core/buffer.o
+  CC      drivers/tty/vt/consolemap_deftbl.o
+  CC      drivers/usb/core/sysfs.o
+  CC      drivers/tty/vt/defkeymap.o
+  CC      drivers/usb/core/endpoint.o
+  CC      drivers/usb/dwc3/otg.o
+  CC      drivers/staging/samsung/sec_slow.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_common.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_control.o
+  CC      drivers/usb/core/devio.o
+  CC      drivers/usb/dwc3/host.o
+  CC      drivers/usb/core/notify.o
+  CC      drivers/staging/samsung/sec_argos.o
+  CC      drivers/staging/samsung/sec_bsp.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_main.o
+  CC      drivers/usb/dwc3/gadget.o
+  CC      drivers/usb/core/generic.o
+  LD      drivers/tty/vt/built-in.o
+  LD      drivers/tty/built-in.o
+  CC      drivers/usb/core/quirks.o
+  CC      drivers/watchdog/watchdog_core.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_packet.o
+  LD      drivers/staging/samsung/built-in.o
+  LD      drivers/staging/built-in.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_reliable.o
+  CC      drivers/video/exynos/decon/decon-int_drv.o
+  CC      drivers/video/exynos/decon/decon-ext_drv.o
+  CC      drivers/watchdog/watchdog_dev.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_sensor.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_sysfs.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_ssi_spi.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_tty.o
+  CC      drivers/watchdog/s3c2410_wdt.o
+  CC      drivers/video/exynos/decon/decon_helper.o
+  CC      drivers/usb/core/devices.o
+  CC      drivers/video/exynos/decon/dsim_drv.o
+  CC      drivers/sensorhub/brcm/bbdpl/bcm_gps_spi.o
+  CC      drivers/sensorhub/brcm/bbdpl/bbd_patch.o
+  LD      drivers/watchdog/watchdog.o
+  LD      drivers/watchdog/built-in.o
+  CC      drivers/usb/gadget/udc-core.o
+  CC      drivers/usb/dwc3/ep0.o
+  CC      drivers/usb/core/port.o
+  CC      drivers/sensorhub/brcm/bbdpl/transport/bbd_bridge_c.o
+  CC      drivers/sensorhub/brcm/bbdpl/transport/bbd_engine.o
+  CC      drivers/usb/gadget/android.o
+  CC      drivers/sensorhub/brcm/bbdpl/transport/bbd_packet_layer_c.o
+  CC      drivers/usb/core/hcd-pci.o
+  CC      drivers/usb/dwc3/debugfs.o
+  CC      drivers/sensorhub/brcm/bbdpl/utils/crc8bits_c.o
+  CC      drivers/sensorhub/brcm/bbdpl/utils/ring_buffer_c.o
+  CC      drivers/video/exynos/decon/dsim_reg_7420.o
+  CC      drivers/sensorhub/brcm/bbdpl/transport/transport_layer_c.o
+  CC      drivers/video/exynos/decon/decon_reg_7420.o
+  CC      drivers/usb/dwc3/dwc3-exynos.o
+  LD      drivers/usb/core/usbcore.o
+  CC      drivers/sensorhub/brcm/bbdpl/utils/stream_codec_c.o
+  LD      drivers/usb/core/built-in.o
+  CC      drivers/usb/host/pci-quirks.o
+  LD      drivers/usb/misc/built-in.o
+  CC      drivers/usb/notify/host_notify_class.o
+In file included from drivers/usb/gadget/android.c:43:0:
+drivers/usb/gadget/f_mtp_samsung.c: In function 'mtp_bind_config':
+drivers/usb/gadget/f_mtp_samsung.c:1771:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+drivers/usb/gadget/f_mtp_samsung.c:1774:4: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+  LD      drivers/sensorhub/brcm/bbdpl/utils/built-in.o
+  CC      drivers/usb/notify/external_notify.o
+In file included from drivers/usb/gadget/android.c:147:0:
+drivers/usb/gadget/f_conn_gadget.c: In function 'conn_gadget_cleanup':
+drivers/usb/gadget/f_conn_gadget.c:1213:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+drivers/usb/gadget/f_conn_gadget.c:1216:2: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+  LD      drivers/sensorhub/brcm/bbdpl/transport/built-in.o
+In file included from drivers/usb/gadget/android.c:150:0:
+drivers/usb/gadget/u_ether.c: In function 'alloc_tx_buffer':
+drivers/usb/gadget/u_ether.c:777:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+drivers/usb/gadget/u_ether.c:780:4: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+drivers/usb/gadget/android.c: In function 'mass_storage_function_enable':
+drivers/usb/gadget/android.c:1104:4: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+drivers/usb/gadget/android.c:1107:5: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+  LD      drivers/sensorhub/brcm/bbdpl/built-in.o
+  CC      drivers/sensorhub/brcm/sx9310.o
+  CC      drivers/usb/notify/usb_notify.o
+  CC      drivers/sensorhub/brcm/max_notchfilter/downsample.o
+  CC      drivers/usb/host/xhci.o
+  CC      drivers/sensorhub/brcm/max_notchfilter/fixed_fir_filter.o
+  CC      drivers/usb/dwc3/dwc3-pci.o
+  CC      drivers/sensorhub/brcm/max_notchfilter/fixed_iir_filter.o
   LD      drivers/video/exynos/decon/dsim.o
   LD      drivers/video/exynos/decon/decon.o
+  LD      drivers/sensorhub/brcm/max_notchfilter/built-in.o
+  CC      drivers/sensorhub/brcm/ssp_bbd.o
+  CC      drivers/sensorhub/brcm/factory/mcu_bcm4773.o
   LD      drivers/video/exynos/decon/built-in.o
   LD      drivers/video/exynos/built-in.o
   LD      drivers/video/built-in.o
+  LD      drivers/usb/dwc3/dwc3.o
+  CC      drivers/usb/host/xhci-mem.o
+  LD      drivers/usb/dwc3/built-in.o
+  CC      drivers/usb/phy/phy.o
+  CC      drivers/usb/serial/usb-serial.o
+  CC      drivers/usb/serial/generic.o
+  CC      drivers/usb/notify/usb_notify_sysfs.o
+  LD      drivers/sensorhub/brcm/built-in.o
+  LD      drivers/sensorhub/built-in.o
+  CC      drivers/usb/notify/dock_notify.o
+  CC      drivers/usb/phy/of.o
+  CC      drivers/usb/phy/phy-samsung-usb.o
+  CC      drivers/usb/notify/usb_notifier.o
+  CC      drivers/usb/serial/bus.o
+  CC      drivers/usb/phy/phy-samsung-usb2-dummy.o
+  CC      drivers/usb/serial/pl2303.o
+  CC      drivers/usb/phy/phy-samsung-usb3.o
+  LD      drivers/usb/notify/usb_notify_layer.o
+  LD      drivers/usb/notify/built-in.o
+  CC      drivers/usb/storage/scsiglue.o
+  LD      drivers/usb/serial/usbserial.o
+  CC      drivers/usb/storage/protocol.o
+  CC      drivers/usb/phy/phy-samsung-usb3-cal.o
+  CC      drivers/usb/gadget/usbstring.o
+  CC      drivers/usb/host/xhci-ring.o
+  CC      drivers/usb/host/xhci-hub.o
+  CC      drivers/usb/storage/transport.o
+  LD      drivers/usb/phy/built-in.o
+  CC      drivers/usb/usb-common.o
+  CC      drivers/usb/storage/usb.o
+  CC      drivers/usb/gadget/config.o
+  LD      drivers/usb/serial/built-in.o
+  CC      drivers/usb/host/xhci-dbg.o
+  CC      drivers/usb/gadget/epautoconf.o
+  CC      drivers/usb/host/xhci-pci.o
+  CC      drivers/usb/gadget/composite.o
+  CC      drivers/usb/storage/initializers.o
+  CC      drivers/usb/host/xhci-plat.o
+  CC      drivers/usb/gadget/functions.o
+  CC      drivers/usb/storage/sierra_ms.o
+  CC      drivers/usb/gadget/configfs.o
+  CC      drivers/usb/storage/option_ms.o
+  CC      drivers/usb/gadget/f_acm.o
+  CC      drivers/usb/gadget/u_serial.o
+  CC      drivers/usb/storage/usual-tables.o
+  CC      drivers/usb/gadget/multi_config.o
+  LD      drivers/usb/host/xhci-hcd.o
+  LD      drivers/usb/host/built-in.o
+  LD      drivers/usb/storage/usb-storage.o
+  LD      drivers/usb/storage/built-in.o
+  LD      drivers/usb/gadget/libcomposite.o
+  LD      drivers/usb/gadget/usb_f_acm.o
+  LD      drivers/usb/gadget/g_android.o
+  LD      drivers/usb/gadget/built-in.o
+  LD      drivers/usb/built-in.o
   LD      drivers/built-in.o
   LINK    vmlinux
   LD      vmlinux.o
@@ -49,9 +370,9 @@ make[1]: Nothing to be done for 'dtbs'.
   SORTEX  vmlinux
   SYSMAP  System.map
   FIPS : Generating hmac of fmp and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= dd72b14720ffed2e4914d138bae980b99f3c67c0e189408afaf68afd38daa07a
+HMAC-SHA256(builtime_bytes.bin)= 054b0de561953c1c5fd9b5b0ee3ce79d3d89b942478b356c0d966546b6a8a9e8
   FIPS : Generating hmac of crypto and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= aa1cec150b14f2fdf8a4d823b1db368a0999623947b45a5b37ad95a9cee8b716
+HMAC-SHA256(builtime_bytes.bin)= d40321a2a82028c8abdd5367b585298f5a76beab03f9f4330ce5524758d576b2
   OBJCOPY arch/arm64/boot/Image
   GZIP    arch/arm64/boot/Image.gz
 Processing dts files...
@@ -91,4 +412,4 @@ dtb = boot.img-dtb
 Building image...
  
 Done!
-Total compile time is 48 seconds
+Total compile time is 150 seconds
