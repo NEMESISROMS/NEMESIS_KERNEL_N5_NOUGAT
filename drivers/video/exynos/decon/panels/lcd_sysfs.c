@@ -18,6 +18,10 @@
 #include "dsim_backlight.h"
 #include "../decon.h"
 
+#ifdef CONFIG_FB_DSU
+#include <linux/sec_debug.h>
+#endif
+
 #if defined(CONFIG_EXYNOS_DECON_MDNIE_LITE)
 #include "mdnie.h"
 #endif
@@ -981,8 +985,11 @@ static ssize_t adaptive_control_store(struct device *dev, struct device_attribut
 			origin_nit += gap_nit;
 		}
 
-		if (value != W_HBM_OFF)
+		if (value != W_HBM_OFF) {
+			mutex_lock(&priv->lock);
 			priv->adaptive_control = value;
+			mutex_unlock(&priv->lock);
+		}
 
 		priv->is_br_override = true;
 		for (i = 1; i < W_HBM_STEP; i++) {
@@ -1003,8 +1010,11 @@ static ssize_t adaptive_control_store(struct device *dev, struct device_attribut
 		}
 		priv->is_br_override = false;
 
-		if (value == W_HBM_OFF)
+		if (value == W_HBM_OFF) {
+			mutex_lock(&priv->lock);
 			priv->adaptive_control = value;
+			mutex_unlock(&priv->lock);
+		}
 
 		priv->bd->props.brightness = final_br;
 		dsim_panel_set_brightness(dsim, 0);
@@ -1030,7 +1040,9 @@ static ssize_t adaptive_control_store(struct device *dev,
 	else {
 		if (priv->adaptive_control != value) {
 			dev_info(dev, "%s: %d, %d\n", __func__, priv->adaptive_control, value);
+			mutex_lock(&priv->lock);
 			priv->adaptive_control = value;
+			mutex_unlock(&priv->lock);
 			dsim_panel_set_brightness(dsim, 1);
 		}
 	}
@@ -1142,6 +1154,57 @@ static DEVICE_ATTR(octa_id, 0444, octa_id_show, NULL);
 #endif
 
 
+#ifdef CONFIG_FB_DSU
+static ssize_t resolution_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	int i;
+	struct dsim_device *dsim;
+	struct panel_private *priv = dev_get_drvdata(dev);
+
+	dsim = container_of(priv, struct dsim_device, priv);
+	for( i=0; i<ARRAY_SIZE(dsu_config); i++ ) {
+		if( dsu_config[i].value == dsim->dsu_param_value ) {
+			strcpy( buf, dsu_config[i].id_str );
+			pr_info( "%s:%s,%d\n", __func__, dsu_config[i].id_str, dsu_config[i].value );
+			return strlen(buf);
+			break;
+		}
+	}
+
+	strcpy(buf, "WQHD" );
+	pr_err( "%s:(default)%s,%d\n", __func__, buf, DSU_CONFIG_WQHD );
+	return strlen(buf);
+}
+
+static ssize_t resolution_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct dsim_device *dsim;
+	struct panel_private *priv = dev_get_drvdata(dev);
+	int ret;
+	int i;
+
+	dsim = container_of(priv, struct dsim_device, priv);
+	if( dsim->dsu_param_offset==0 ) {
+		pr_err( "%s: failed. offset not exist\n", __func__ );
+	}
+
+	for( i=0; i<ARRAY_SIZE(dsu_config); i++ ) {
+		if( !strncmp(dsu_config[i].id_str, buf, strlen(dsu_config[i].id_str)) ) {
+			dsim->dsu_param_value = dsu_config[i].value;
+			ret = sec_set_param((unsigned long) dsim->dsu_param_offset, dsim->dsu_param_value);
+			pr_info( "%s:%s,%d,%d\n", __func__, dsu_config[i].id_str, dsim->dsu_param_value, ret );
+			return size;
+		}
+	}
+
+	pr_err( "%s: failed (%s)\n", __func__, buf );
+	return size;
+}
+static DEVICE_ATTR(resolution, 0664, resolution_show, resolution_store);
+#endif
+
 static DEVICE_ATTR(accessibility, 0000, accessibility_show, accessibility_store);
 static DEVICE_ATTR(adaptive_control, 0664, adaptive_control_show, adaptive_control_store);
 static DEVICE_ATTR(lcd_type, 0444, lcd_type_show, NULL);
@@ -1193,6 +1256,9 @@ static struct attribute *lcd_sysfs_attributes[] = {
 	&dev_attr_accessibility.attr,
 #ifdef CONFIG_CHECK_OCTA_CHIP_ID
 	&dev_attr_octa_id.attr,
+#endif
+#ifdef CONFIG_FB_DSU
+	&dev_attr_resolution.attr,
 #endif
 	NULL,
 };

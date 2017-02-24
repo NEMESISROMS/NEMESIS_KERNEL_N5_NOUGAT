@@ -184,11 +184,11 @@ const struct cntry_locales_custom translate_custom_table[] = {
 	{"MH", "XZ", 11},	/* Universal if Country code is MARSHALL ISLANDS */
 	{"GL", "GP", 2},
 	{"AL", "AL", 2},
+	{"DZ", "GB", 6},
 	{"AS", "AS", 12},
 	{"AI", "AI", 1},
 	{"AF", "AD", 0},
 	{"AG", "AG", 2},
-	{"AM", "AM", 1},
 	{"AR", "AU", 6},
 	{"AW", "AW", 2},
 	{"AU", "AU", 6},
@@ -246,9 +246,7 @@ const struct cntry_locales_custom translate_custom_table[] = {
 	{"MO", "SG", 0},
 	{"MK", "MK", 2},
 	{"MW", "MW", 1},
-	{"MY", "MY", 19},
-	{"DZ", "DZ", 2},
-	{"TW", "TW", 65},
+	{"MY", "MY", 3},
 	{"MV", "MV", 3},
 	{"MT", "MT", 4},
 	{"MQ", "MQ", 2},
@@ -283,6 +281,7 @@ const struct cntry_locales_custom translate_custom_table[] = {
 	{"LK", "LK", 1},
 	{"SE", "SE", 4},
 	{"CH", "CH", 4},
+	{"TW", "TW", 1},
 	{"TH", "TH", 5},
 	{"TT", "TT", 3},
 	{"TR", "TR", 7},
@@ -296,14 +295,18 @@ const struct cntry_locales_custom translate_custom_table[] = {
 	{"ZM", "LA", 2},
 	{"EC", "EC", 21},
 	{"SV", "SV", 25},
+#ifdef BCM4358_CHIP
 	{"KR", "KR", 70},
+#else
+	{"KR", "KR", 48},
+#endif
 	{"RU", "RU", 986},
 	{"UA", "UA", 16},
 	{"GT", "GT", 1},
 	{"MN", "MN", 1},
 	{"NI", "NI", 2},
 	{"UZ", "MA", 2},
-	{"ZA", "ZA", 19},
+	{"ZA", "ZA", 6},
 	{"EG", "EG", 13},
 	{"TN", "TN", 1},
 	{"AO", "AD", 0},
@@ -348,21 +351,27 @@ void get_customized_country_code(void *adapter, char *country_iso_code, wl_count
 }
 
 #ifdef PLATFORM_SLP
+#define CIDINFO "/opt/etc/.cid.info"
+#define PSMINFO "/opt/etc/.psm.info"
+#define MACINFO "/opt/etc/.mac.info"
 #define MACINFO_EFS NULL
+#define REVINFO "/opt/etc/.rev"
+#define WIFIVERINFO "/opt/etc/.wifiver.info"
+#define ANTINFO "/opt/etc/.ant.info"
+#define MEMDUMPINFO "/opt/etc/.memdump.info"
 #define WRMAC_BUF_SIZE 19
 #else
+#define MACINFO "/data/.mac.info"
 #define MACINFO_EFS "/efs/wifi/.mac.info"
+#define NVMACINFO "/data/.nvmac.info"
+#define	REVINFO "/data/.rev"
+#define CIDINFO "/data/.cid.info"
+#define PSMINFO "/data/.psm.info"
+#define WIFIVERINFO "/data/.wifiver.info"
+#define ANTINFO "/data/.ant.info"
+#define MEMDUMPINFO "/data/.memdump.info"
 #define WRMAC_BUF_SIZE 18
 #endif /* PLATFORM_SLP */
-
-#define MACINFO	PLATFORM_PATH".mac.info"
-#define REVINFO	PLATFORM_PATH".rev"
-#define CIDINFO	PLATFORM_PATH".cid.info"
-#define PSMINFO PLATFORM_PATH".psm.info"
-#define ANTINFO	PLATFORM_PATH".ant.info"
-#define WIFIVERINFO	PLATFORM_PATH".wifiver.info"
-#define MEMDUMPINFO	PLATFORM_PATH".memdump.info"
-#define NVMACINFO	PLATFORM_PAHT".nvmac.info"
 
 #ifdef BCM4330_CHIP
 #define CIS_BUF_SIZE            128
@@ -470,8 +479,7 @@ static int dhd_write_cid_file(const char *filepath_cid, const char *buf, int buf
 	/* File is always created. */
 	fp = filp_open(filepath_cid, O_RDWR | O_CREAT, 0666);
 	if (IS_ERR(fp)) {
-		DHD_ERROR(("[WIFI_SEC] %s: File open err %ld\n",
-			filepath_cid, PTR_ERR(fp)));
+		DHD_ERROR(("[WIFI_SEC] %s: File open error\n", filepath_cid));
 		return -1;
 	} else {
 		oldfs = get_fs();
@@ -838,7 +846,7 @@ startwrite:
 		mac->octet[0], mac->octet[1], mac->octet[2],
 		mac->octet[3], mac->octet[4], mac->octet[5]);
 
-	/* File will be created .mac.info. */
+	/* File will be created /data/.mac.info. */
 	fp_mac = filp_open(filepath_data, O_RDWR | O_CREAT, 0666);
 
 	if (IS_ERR(fp_mac)) {
@@ -871,7 +879,7 @@ startwrite:
 	}
 
 	filp_close(fp_mac, NULL);
-	/* end of .mac.info */
+	/* end of /data/.mac.info */
 
 	if (filepath_efs == NULL) {
 		DHD_ERROR(("[WIFI_SEC] %s : no efs filepath", __func__));
@@ -937,9 +945,9 @@ void sec_control_pm(dhd_pub_t *dhd, uint *power_mode)
 		/* Enable PowerSave Mode */
 		dhd_wl_ioctl_cmd(dhd, WLC_SET_PM, (char *)power_mode,
 			sizeof(uint), TRUE, 0);
-		DHD_ERROR(("[WIFI_SEC] %s: %s doesn't exist"
+		DHD_ERROR(("[WIFI_SEC] %s: /data/.psm.info doesn't exist"
 			" so set PM to %d\n",
-			__FUNCTION__, filepath, *power_mode));
+			__FUNCTION__, *power_mode));
 		return;
 	} else {
 		kernel_read(fp, fp->f_pos, &power_val, 1);
@@ -1083,24 +1091,24 @@ int sec_get_param_wfa_cert(dhd_pub_t *dhd, int mode, uint* read_val)
 
 	switch (mode) {
 		case SET_PARAM_BUS_TXGLOM_MODE:
-			filepath = PLATFORM_PATH".bustxglom.info";
+			filepath = "/data/.bustxglom.info";
 			break;
 		case SET_PARAM_ROAMOFF:
-			filepath = PLATFORM_PATH".roamoff.info";
+			filepath = "/data/.roamoff.info";
 			break;
 #ifdef USE_WL_FRAMEBURST
 		case SET_PARAM_FRAMEBURST:
-			filepath = PLATFORM_PATH".frameburst.info";
+			filepath = "/data/.frameburst.info";
 			break;
 #endif /* USE_WL_FRAMEBURST */
 #ifdef USE_WL_TXBF
 		case SET_PARAM_TXBF:
-			filepath = PLATFORM_PATH".txbf.info";
+			filepath = "/data/.txbf.info";
 			break;
 #endif /* USE_WL_TXBF */
 #ifdef PROP_TXSTATUS
 		case SET_PARAM_PROPTX:
-			filepath = PLATFORM_PATH".proptx.info";
+			filepath = "/data/.proptx.info";
 			break;
 #endif /* PROP_TXSTATUS */
 		default:
@@ -1430,7 +1438,7 @@ int dhd_write_otp(dhd_pub_t *dhd)
 	old_fs = get_fs();
 	set_fs(KERNEL_DS);
 
-	fp = filp_open(PLATFORM_PATH".otp.info", O_RDONLY, 0);
+	fp = filp_open("/data/.otp.info", O_RDONLY, 0);
 	if (IS_ERR(fp)) {
 
 		/* prepare .otp.info data through reading OTP from chip  */
@@ -1444,7 +1452,7 @@ int dhd_write_otp(dhd_pub_t *dhd)
 		}
 
 		/* create .otp.info */
-		fp = filp_open(PLATFORM_PATH".otp.info", O_RDWR|O_CREAT, 0666);
+		fp = filp_open("/data/.otp.info", O_RDWR|O_CREAT, 0666);
 	        if (IS_ERR(fp)) {
 			DHD_ERROR(("%s:(MFG mode) file create error\n", __FUNCTION__));
 			return BCME_ERROR;
@@ -1462,7 +1470,7 @@ int dhd_write_otp(dhd_pub_t *dhd)
 
 exit:
 	if (sta_mode == TRUE) {
-		fp = filp_open(PLATFORM_PATH".otp.info", O_RDONLY, 0);
+		fp = filp_open("/data/.otp.info", O_RDONLY, 0);
 		if (IS_ERR(fp)) {
 			DHD_ERROR(("%s: file open error.\n", __FUNCTION__));
 			return BCME_ERROR;

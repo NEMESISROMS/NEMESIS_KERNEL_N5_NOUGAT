@@ -24,7 +24,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: dhd_pcie.c 668473 2016-11-03 13:40:32Z $
+ * $Id: dhd_pcie.c 672945 2016-11-30 08:58:34Z $
  */
 
 
@@ -115,8 +115,10 @@ static void dhdpcie_bus_wtcm16(dhd_bus_t *bus, ulong offset, uint16 data);
 static uint16 dhdpcie_bus_rtcm16(dhd_bus_t *bus, ulong offset);
 static void dhdpcie_bus_wtcm32(dhd_bus_t *bus, ulong offset, uint32 data);
 static uint32 dhdpcie_bus_rtcm32(dhd_bus_t *bus, ulong offset);
+#ifdef DHD_SUPPORT_64BIT
 static void dhdpcie_bus_wtcm64(dhd_bus_t *bus, ulong offset, uint64 data);
 static uint64 dhdpcie_bus_rtcm64(dhd_bus_t *bus, ulong offset);
+#endif /* DHD_SUPPORT_64BIT */
 static void dhdpcie_bus_cfg_set_bar0_win(dhd_bus_t *bus, uint32 data);
 static void dhdpcie_bus_reg_unmap(osl_t *osh, ulong addr, int size);
 static int dhdpcie_cc_nvmshadow(dhd_bus_t *bus, struct bcmstrbuf *b);
@@ -2227,18 +2229,25 @@ dhdpcie_bus_membytes(dhd_bus_t *bus, bool write, ulong address, uint8 *data, uin
 	 */
 
 	/* Determine initial transfer parameters */
+#ifdef DHD_SUPPORT_64BIT
 	dsize = sizeof(uint64);
+#else /* !DHD_SUPPORT_64BIT */
+	dsize = sizeof(uint32);
+#endif /* DHD_SUPPORT_64BIT */
 
 	/* Do the transfer(s) */
 	if (write) {
 		while (size) {
-			if (size >= sizeof(uint64) && little_endian &&
-#ifdef CONFIG_64BIT
-				!(address % 8) &&
-#endif /* CONFIG_64BIT */
-				1) {
+#ifdef DHD_SUPPORT_64BIT
+			if (size >= sizeof(uint64) && little_endian &&	!(address % 8)) {
 				dhdpcie_bus_wtcm64(bus, address, *((uint64 *)data));
-			} else {
+			}
+#else /* !DHD_SUPPORT_64BIT */
+			if (size >= sizeof(uint32) && little_endian &&	!(address % 4)) {
+				dhdpcie_bus_wtcm32(bus, address, *((uint32*)data));
+			}
+#endif /* DHD_SUPPORT_64BIT */
+			else {
 				dsize = sizeof(uint8);
 				dhdpcie_bus_wtcm8(bus, address, *data);
 			}
@@ -2251,13 +2260,18 @@ dhdpcie_bus_membytes(dhd_bus_t *bus, bool write, ulong address, uint8 *data, uin
 		}
 	} else {
 		while (size) {
-			if (size >= sizeof(uint64) && little_endian &&
-#ifdef CONFIG_64BIT
-				!(address % 8) &&
-#endif /* CONFIG_64BIT */
-				1) {
+#ifdef DHD_SUPPORT_64BIT
+			if (size >= sizeof(uint64) && little_endian &&	!(address % 8))
+			{
 				*(uint64 *)data = dhdpcie_bus_rtcm64(bus, address);
-			} else {
+			}
+#else /* !DHD_SUPPORT_64BIT */
+			if (size >= sizeof(uint32) && little_endian &&	!(address % 4))
+			{
+				*(uint32 *)data = dhdpcie_bus_rtcm32(bus, address);
+			}
+#endif /* DHD_SUPPORT_64BIT */
+			else {
 				dsize = sizeof(uint8);
 				*data = dhdpcie_bus_rtcm8(bus, address);
 			}
@@ -2523,7 +2537,7 @@ dhd_bus_rx_frame(struct dhd_bus *bus, void* pkt, int ifidx, uint pkt_count)
 void
 dhdpcie_bus_wtcm8(dhd_bus_t *bus, ulong offset, uint8 data)
 {
- 	W_REG(bus->dhd->osh, (volatile uint8 *)(bus->tcm + offset), data);
+	W_REG(bus->dhd->osh, (volatile uint8 *)(bus->tcm + offset), data);
 }
 
 uint8
@@ -2531,34 +2545,34 @@ dhdpcie_bus_rtcm8(dhd_bus_t *bus, ulong offset)
 {
 	volatile uint8 data;
 
- 	data = R_REG(bus->dhd->osh, (volatile uint8 *)(bus->tcm + offset));
-
+	data = R_REG(bus->dhd->osh, (volatile uint8 *)(bus->tcm + offset));
 	return data;
 }
 
 void
 dhdpcie_bus_wtcm32(dhd_bus_t *bus, ulong offset, uint32 data)
 {
- 	W_REG(bus->dhd->osh, (volatile uint32 *)(bus->tcm + offset), data);
+	W_REG(bus->dhd->osh, (volatile uint32 *)(bus->tcm + offset), data);
 }
 void
 dhdpcie_bus_wtcm16(dhd_bus_t *bus, ulong offset, uint16 data)
 {
- 	W_REG(bus->dhd->osh, (volatile uint16 *)(bus->tcm + offset), data);
+	W_REG(bus->dhd->osh, (volatile uint16 *)(bus->tcm + offset), data);
 }
+#ifdef DHD_SUPPORT_64BIT
 void
 dhdpcie_bus_wtcm64(dhd_bus_t *bus, ulong offset, uint64 data)
 {
- 	W_REG(bus->dhd->osh, (volatile uint64 *)(bus->tcm + offset), data);
+	W_REG(bus->dhd->osh, (volatile uint64 *)(bus->tcm + offset), data);
 }
+#endif /* DHD_SUPPORT_64BIT */
 
 uint16
 dhdpcie_bus_rtcm16(dhd_bus_t *bus, ulong offset)
 {
 	volatile uint16 data;
 
- 	data = R_REG(bus->dhd->osh, (volatile uint16 *)(bus->tcm + offset));
-
+	data = R_REG(bus->dhd->osh, (volatile uint16 *)(bus->tcm + offset));
 	return data;
 }
 
@@ -2567,20 +2581,20 @@ dhdpcie_bus_rtcm32(dhd_bus_t *bus, ulong offset)
 {
 	volatile uint32 data;
 
- 	data = R_REG(bus->dhd->osh, (volatile uint32 *)(bus->tcm + offset));
-
+	data = R_REG(bus->dhd->osh, (volatile uint32 *)(bus->tcm + offset));
 	return data;
 }
 
+#ifdef DHD_SUPPORT_64BIT
 uint64
 dhdpcie_bus_rtcm64(dhd_bus_t *bus, ulong offset)
 {
 	volatile uint64 data;
 
- 	data = R_REG(bus->dhd->osh, (volatile uint64 *)(bus->tcm + offset));
-
+	data = R_REG(bus->dhd->osh, (volatile uint64 *)(bus->tcm + offset));
 	return data;
 }
+#endif /* DHD_SUPPORT_64BIT */
 
 /** A snippet of dongle memory is shared between host and dongle */
 void

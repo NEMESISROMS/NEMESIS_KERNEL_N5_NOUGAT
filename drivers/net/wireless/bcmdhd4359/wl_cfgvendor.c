@@ -24,7 +24,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: wl_cfgvendor.c 668337 2016-11-03 01:32:05Z $
+ * $Id: wl_cfgvendor.c 675151 2016-12-14 12:09:05Z $
  */
 
 /*
@@ -763,14 +763,14 @@ wl_cfgvendor_hotlist_cfg(struct wiphy *wiphy,
 	nla_for_each_attr(iter, data, len, tmp2) {
 		type = nla_type(iter);
 		switch (type) {
-			case GSCAN_ATTRIBUTE_HOTLIST_BSSIDS:
-				pbssid = hotlist_params->bssid;
-				nla_for_each_nested(outer, iter, tmp) {
-					nla_for_each_nested(inner, outer, tmp1) {
-						type = nla_type(inner);
+		case GSCAN_ATTRIBUTE_HOTLIST_BSSIDS:
+			pbssid = hotlist_params->bssid;
+			nla_for_each_nested(outer, iter, tmp) {
+				nla_for_each_nested(inner, outer, tmp1) {
+					type = nla_type(inner);
 
-						switch (type) {
-							case GSCAN_ATTRIBUTE_BSSID:
+					switch (type) {
+					case GSCAN_ATTRIBUTE_BSSID:
 						if (nla_len(inner) != sizeof(pbssid[j].macaddr)) {
 							WL_ERR(("type:%d length:%d not matching.\n",
 								type, nla_len(inner)));
@@ -781,18 +781,18 @@ wl_cfgvendor_hotlist_cfg(struct wiphy *wiphy,
 							&(pbssid[j].macaddr),
 							nla_data(inner),
 							sizeof(pbssid[j].macaddr));
-								break;
-							case GSCAN_ATTRIBUTE_RSSI_LOW:
+						break;
+					case GSCAN_ATTRIBUTE_RSSI_LOW:
 						if (nla_len(inner) != sizeof(uint8)) {
 							WL_ERR(("type:%d length:%d not matching.\n",
 								type, nla_len(inner)));
 							err = -EINVAL;
 							goto exit;
 						}
-								pbssid[j].rssi_reporting_threshold =
-								         (int8) nla_get_u8(inner);
-								break;
-							case GSCAN_ATTRIBUTE_RSSI_HIGH:
+						pbssid[j].rssi_reporting_threshold =
+							(int8)nla_get_u8(inner);
+						break;
+					case GSCAN_ATTRIBUTE_RSSI_HIGH:
 						if (nla_len(inner) != sizeof(uint8)) {
 							WL_ERR(("type:%d length:%d not matching.\n",
 								type, nla_len(inner)));
@@ -800,30 +800,30 @@ wl_cfgvendor_hotlist_cfg(struct wiphy *wiphy,
 							goto exit;
 						}
 						dummy = (int8)nla_get_u8(inner);
-								break;
-							default:
+						break;
+					default:
 						WL_ERR(("ATTR unknown %d\n", type));
 						err = -EINVAL;
 						goto exit;
-						}
 					}
+				}
 				if (++j >= PFN_SWC_MAX_NUM_APS) {
 					WL_ERR(("cap hotlist max:%d\n", j));
 					break;
 				}
-				}
-				hotlist_params->nbssid = j;
-				break;
-			case GSCAN_ATTRIBUTE_HOTLIST_FLUSH:
+			}
+			hotlist_params->nbssid = j;
+			break;
+		case GSCAN_ATTRIBUTE_HOTLIST_FLUSH:
 			if (nla_len(iter) != sizeof(uint8)) {
 				WL_ERR(("type:%d length:%d not matching.\n",
 					type, nla_len(inner)));
 				err = -EINVAL;
 				goto exit;
 			}
-				flush = nla_get_u8(iter);
-				break;
-			case GSCAN_ATTRIBUTE_LOST_AP_SAMPLE_SIZE:
+			flush = nla_get_u8(iter);
+			break;
+		case GSCAN_ATTRIBUTE_LOST_AP_SAMPLE_SIZE:
 			if (nla_len(iter) != sizeof(uint32)) {
 				WL_ERR(("type:%d length:%d not matching.\n",
 					type, nla_len(inner)));
@@ -831,12 +831,12 @@ wl_cfgvendor_hotlist_cfg(struct wiphy *wiphy,
 				goto exit;
 			}
 			hotlist_params->lost_ap_window = (uint16)nla_get_u32(iter);
-				break;
-			default:
-				WL_ERR(("Unknown type %d\n", type));
+			break;
+		default:
+			WL_ERR(("Unknown type %d\n", type));
 			err = -EINVAL;
 			goto exit;
-			}
+		}
 
 	}
 
@@ -1192,14 +1192,14 @@ wl_cfgvendor_rtt_cancel_config(struct wiphy *wiphy, struct wireless_dev *wdev,
 			}
 			target_cnt = nla_get_u8(iter);
 			if ((target_cnt > 0) && (target_cnt < RTT_MAX_TARGET_CNT)) {
-			mac_list = (struct ether_addr *)kzalloc(target_cnt * ETHER_ADDR_LEN,
-				GFP_KERNEL);
-			if (mac_list == NULL) {
-				WL_ERR(("failed to allocate mem for mac list\n"));
+				mac_list = (struct ether_addr *)kzalloc(target_cnt * ETHER_ADDR_LEN,
+					GFP_KERNEL);
+				if (mac_list == NULL) {
+					WL_ERR(("failed to allocate mem for mac list\n"));
 					err = -EINVAL;
-				goto exit;
-			}
-			mac_addr = &mac_list[0];
+					goto exit;
+				}
+				mac_addr = &mac_list[0];
 			} else {
 				goto cancel;
 			}
@@ -1439,7 +1439,7 @@ wl_cfgvendor_apf_set_filter(struct wiphy *wiphy,
 				 * is not already initialized.
 				 */
 				if (nla_len(iter) == sizeof(uint32) && !program_len) {
-				program_len = nla_get_u32(iter);
+					program_len = nla_get_u32(iter);
 				} else {
 					ret = -EINVAL;
 					goto exit;

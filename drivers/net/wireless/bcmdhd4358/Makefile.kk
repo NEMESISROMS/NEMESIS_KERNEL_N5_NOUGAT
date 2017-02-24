@@ -181,8 +181,7 @@ DHDCFLAGS += -DCONFIG_HAS_WAKELOCK
 # Used short dwell time during initial scan
 DHDCFLAGS += -DUSE_INITIAL_SHORT_DWELL_TIME
 
-# Korea and Japan ccode revision will be fixed by nvram's value
-DHDCFLAGS += -DKEEP_KR_REGREV
+# Japan ccode revision will be fixed by nvram's value
 DHDCFLAGS += -DKEEP_JP_REGREV
 
 # NAN feature
@@ -198,28 +197,6 @@ DHDCFLAGS += -DUSE_WFA_CERT_CONF
 
 # Customer scan timeout setting
 DHDCFLAGS += -DCUSTOMER_SCAN_TIMEOUT_SETTING
-
-# Android Version Check from Platform source
-CANDIDATE_VERSION_PATH := ./../../build/core ../../../../../../build/core out
-FOUND_VERSION_PATH := $(foreach dir,$(CANDIDATE_VERSION_PATH), $(wildcard $(dir)/version_defaults.mk))
-FOUND_VERSION_PATH := $(word 1, $(FOUND_VERSION_PATH))
-ifeq ($(FOUND_VERSION_PATH),)
-$(warning Not found Android version file. Set as Legacy mode)
-DHDCFLAGS += -DDHD_LEGACY_FILE_PATH
-DHDCFLAGS += -DDHD_DISABLE_ANDROID_FEATURE_SET
-else
-# Extract version string and get major number
-ANDROID_PLATFORM_VERSION := $(shell grep "PLATFORM_VERSION := " $(FOUND_VERSION_PATH) | cut -d "=" -f 2 | cut -d "." -f 1 | sed 's/ //g')
-$(warning Android Platform Version : $(ANDROID_PLATFORM_VERSION))
-# If Android version lower than 7(Nougat) => Use Legacy File path
-ifeq ($(shell expr $(ANDROID_PLATFORM_VERSION) \< 7),1)
-DHDCFLAGS += -DDHD_LEGACY_FILE_PATH
-DHDCFLAGS += -DDHD_DISABLE_ANDROID_FEATURE_SET
-$(warning Will be use Legacy file path)
-else
-DHDCFLAGS += -DDHD_SET_COUNTRY_SUPPORT
-endif
-endif
 
 ##############################
 # Android Platform Definition
@@ -258,8 +235,6 @@ ifneq ($(CONFIG_BCM4358),)
   DHDCFLAGS += -DDHD_DONOT_FORWARD_BCMEVENT_AS_NETWORK_PKT
   DHDCFLAGS += -DCUSTOM_BCN_TIMEOUT=6
   DHDCFLAGS += -DSOFTAP_UAPSD_OFF
-# To support APF
-  DHDCFLAGS += -DAPF
 # tput enhancement for common
   DHDCFLAGS += -DUSE_WL_TXBF
   DHDCFLAGS += -DUSE_WL_FRAMEBURST
@@ -301,7 +276,6 @@ endif
 
 ifeq ($(CONFIG_ARCH_MSM),y)
   DHDCFLAGS += -DSET_RPS_CPUS
-  DHDCFLAGS := $(filter-out -DDHDTCPACK_SUPPRESS,$(DHDCFLAGS))
 endif
 
 ifeq ($(CONFIG_ARCH_MSM8996),y)

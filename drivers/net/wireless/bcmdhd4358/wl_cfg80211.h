@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: wl_cfg80211.h 667534 2016-10-27 13:19:42Z $
+ * $Id: wl_cfg80211.h 617446 2016-02-05 09:17:31Z $
  */
 
 /**
@@ -672,9 +672,6 @@ struct bcm_cfg80211 {
 	struct mutex event_sync;	/* maily for up/down synchronization */
 	bool disable_roam_event;
 	struct delayed_work pm_enable_work;
-	struct workqueue_struct *event_workq;   /* workqueue for event */
-	struct work_struct event_work;		/* work item for event */
-
 	vndr_ie_setbuf_t *ibss_vsie;	/* keep the VSIE for IBSS */
 	int ibss_vsie_len;
 #ifdef WLAIBSS
@@ -762,14 +759,14 @@ wl_alloc_netinfo(struct bcm_cfg80211 *cfg, struct net_device *ndev,
 	return err;
 }
 static inline void
-wl_dealloc_netinfo_by_wdev(struct bcm_cfg80211 *cfg, struct wireless_dev *wdev)
+wl_dealloc_netinfo(struct bcm_cfg80211 *cfg, struct net_device *ndev)
 {
 	struct net_info *_net_info, *next;
 	unsigned long int flags;
 
 	spin_lock_irqsave(&cfg->net_list_sync, flags);
 	list_for_each_entry_safe(_net_info, next, &cfg->net_list, list) {
-		if (wdev && (_net_info->wdev == wdev)) {
+		if (ndev && (_net_info->ndev == ndev)) {
 			list_del(&_net_info->list);
 			cfg->iface_cnt--;
 			kfree(_net_info);
@@ -1077,13 +1074,6 @@ wl_get_netinfo_by_netdev(struct bcm_cfg80211 *cfg, struct net_device *ndev)
 #define IS_AKM_SUITE_CCKM(sec) false
 #endif /* BCMCCX */
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
-#define STA_INFO_BIT(info) (1ul << NL80211_STA_ ## info)
-#define strnicmp(str1, str2, len) strncasecmp((str1), (str2), (len))
-#else
-#define STA_INFO_BIT(info) (STATION_ ## info)
-#endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)) */
-
 extern s32 wl_cfg80211_attach(struct net_device *ndev, void *context);
 extern s32 wl_cfg80211_attach_post(struct net_device *ndev);
 extern void wl_cfg80211_detach(void *para);
@@ -1275,5 +1265,4 @@ do {                                    \
 	}                               \
 } while (0)
 
-int wl_check_dongle_idle(struct wiphy *wiphy);
 #endif /* _wl_cfg80211_h_ */

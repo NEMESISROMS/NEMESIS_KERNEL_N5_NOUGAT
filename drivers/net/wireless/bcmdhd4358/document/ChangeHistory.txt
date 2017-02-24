@@ -1,89 +1,7 @@
-BCM4358 DHD 1.47.52 for Android Lollipop T/Zero Project
+BCM4358 DHD 1.47.46 for Android Lollipop T/Zero Project
 Notes: 
 - Must sync up DHD and FW for additional message to eliminate spurious D0 interrupt.
 . additional message to eliminate spurious D0 interrupt is enabled from DHD 1.47.20 and FW 7.112.20.5/7.112.20.2(IBSS) 
-
-DHD 1.47.52 - 2016.12.30
-Others
- - CSP:1097702 Fixed to miss check SSID length on cfg80211_get_bss()
- - CSP:1100087 Added to set Country code by HAL
- - CSP:1102273 Fixed prevent issue
- - CSP:1102277 Fixed get feature by HAL
- - CSP:1104300 Set rps_cpus to big core in system late resume condition to resolve short frame rx performance degradation issue
- - CSP:1104452 Fixed for P2P connection failure due to M1 packet goes up with wrong interface
- - CSP:1105985 Fixed send up connection failure event to wpa_supplicant
- - CSP:1106932 Changed channel buf size to 8 bytes alignment to get valid channel list
- - CSP:1110795 Added check reason of file_open error
- - CSP:1111136 Added LOCK/UNLOCK mechanism to protect TDLS peer list
- - CSP:1114716 Increased P2P Provision Discovery Response dwell time
- - CSP:1115484 Fixed vulnerability issues
- - CSP:1115750 Fixed disconnect issue during country code setting time
- - Added channel information log for roaming done
- - Merged mkeep alive feature
- - Re-factorize MSM CFG function selection
- - Support Split ARGOS table
-
-
-DHD 1.47.51 - 2016.11.04
-Kernel Panic
- - CSP:1092776 Replaced API for file writing to prevent kernel panic
- - CSP:1094253 Fixed Kernel Panic by registering Invalid netdev interface
-
-Others
- - CSP:1084284 Fixed scan fail(-16) at wifi on(set country)
- - CSP:1091412 Implement Kernel API for taking SOCRAM dump from other Kernel modules
- - CSP:1093614 Fixed Prevent warning issues
- - CSP:1093614, 1101569 Fixed host memory leak issue by missing cfg80211_put_bss()
- - CSP:1094025 Fixed DHCP failure on WiFi-Sharing mode
- - CSP:1096065 Added COB type definition dependency in Kernel Config
- - CSP:1096065 Supported Kernel 4.x compatibility
- - CSP:1097620 Added MSM kernel cfg function selection code
- - CSP:1097948 DHD info file path changed above android 7.0 version
- - CSP:1097967 Replaced ccode regrev ZA/19 in translate_custom_table
-   (This patch should be sync up with FW 7.112.49 or higher version.)
- - CSP:1101569 changed firmware busy debug message log level
- - Added Android packet filter(N-OS)
- - Added PCIe patches to improve PCIe Stability
- - Fixed cfg80211_get_bss() function argument as kernel version
- - Fixed scan busy during association
- - Support the PCI Kernel API for Kernel 4.x version
-
-
-DHD 1.47.49 - 2016.08.29
-Kernel Panic
- - CSP:1062516 Prevent invalid address access due to PCIe Linkdown
- - CSP:1063099 Fixed Kernel panic when host failed to create a kernel thread
- - CSP:1066646 Fixed kernel panic due to not deleted tcpack suppress timer
-
-Others
- - CSP:1042751 Changed event handler using workqueue
- - CSP:1042751 Seperated wakelock for pm_handler and tx_flow from wlan_wake
- - CSP:1045070 Disabled DHD_ACKSUPPRESS for MSM platform(Veyron Platform)
- - CSP:1045070 Fixed compatibility issue with Kernel version 3.15 or higher version
- - CSP:1059462 Clear supported feature set of cfgvendor for Samsung Project.
- - CSP:1061564 Prevent kernel panic due to invalid memory access when called dhd_set_mcast_list_handler()
- - CSP:1062950 Removing dhd_os_sdlock/unlock from PCIe
- - CSP:1065376 Added ccode regrev AM/1 in translate_custom_table
-   (This patch should be sync up with FW 7.112.46, 7.112.44.1 or higher version.)
- - CSP:1069391 Replaced ccode regrev MY/19 in translate_custom_table
-   (This patch should be sync up with FW 7.112.46, 7.112.44.1 or higher version.)
- - CSP:1070247 Fix netdev notifier callback for linux-3.11 and above
- - CSP:1073788,1045070 Support MULTIPLE_MODULE_CIS for HAECHI, VEYRON project
- - CSP:1073993 Replaced ccode regrev DZ/2 in translate_custom_table
-   (This patch should be sync up with FW 7.112.46 or higher version.)
- - CSP:1079421 Replaced ccode regrev TW/65 in translate_custom_table
-   (This patch should be sync up with FW 7.112.44.4 or higher version.)
- - Apply Country code/regrev of nvram when Country code is KR for PCIe
- - Fixed failure of join pref command
- - Fixed pm_handler timeout due to wrong value
- - Fixed possible deadlock of dhd_tcp_acksuppress feature
- - Fixed vulnerability issue from PNO command
- - Fixed wl_event_handler thread is not terminated issue for module type
- - Free the data packets which has ETHER_TYPE_BRCM type for strengthening security
- - Prevent corner case of eSCO param sometimes unrecovered issue
- - Security Enhancement for ETHER_TYPE_BRCM frame
-   (This patch should be sync up with FW 7.112.46 or higher version.)
-
 
 DHD 1.47.46 - 2016.05.19
 Kernel Panic
@@ -199,7 +117,7 @@ Others
 
 2015.9.4 - DHD 1.47.37
 Kernel Panic
- - CSP:931392 Added Debug logs to trace RC?™s configuration register status
+ - CSP:931392 Added Debug logs to trace RCâ€™s configuration register status
 
 Others
  - CSP:955172 Disabled forward TDLS frame to supplicant when WFD disabled

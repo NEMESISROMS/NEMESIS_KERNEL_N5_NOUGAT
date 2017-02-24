@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_cfg_vendor.c 655255 2016-08-18 14:58:25Z $
+ * $Id: dhd_cfg_vendor.c 487126 2014-06-24 23:06:12Z $
  */
 
 #include <linuxver.h>
@@ -33,7 +33,6 @@
 #include <wl_cfgvendor.h>
 #include <dngl_stats.h>
 #include <dhd.h>
-#include <dhd_dbg.h>
 #include <dhdioctl.h>
 #include <brcm_nl80211.h>
 

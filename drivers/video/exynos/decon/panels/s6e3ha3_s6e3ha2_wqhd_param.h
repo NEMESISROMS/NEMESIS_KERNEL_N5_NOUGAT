@@ -395,6 +395,43 @@ static const unsigned char S6E3HA2_SEQ_TSET[] = {
         0x19                    /* Global para(8th) + 25 degrees  : 0x19 */
 };
 
+#if defined(CONFIG_FB_DSU)
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_WQHD_00[] = {
+	0xBA,
+	0x01
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_00[] = {
+	0xBA,
+	0x00
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_01[] = {
+	0x2A,
+	0x00, 0x00, 0x04, 0x37,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_02[] = {
+	0x2B,
+	0x00, 0x00, 0x07, 0x7F,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_00[] = {
+	0xBA,
+	0x01
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_01[] = { /* HA2 not support HD */
+	0x2A,
+	0x00, 0x00, 0x02, 0xCF,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_02[] = {
+	0x2B,
+	0x00, 0x00, 0x04, 0xFF,
+};
+#endif
+
 #ifdef CONFIG_LCD_HMT
 #if defined(CONFIG_PANEL_S6E3HF3_DYNAMIC)
 
@@ -769,6 +806,44 @@ static const unsigned char S6E3HA3_SEQ_TE_RISING_TIMING[] = {
 	0x01, 0x09, 0xFF, 0x00, 0x0A
 };
 
+#if defined(CONFIG_FB_DSU)
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_FHD_00[] = {
+        0xBA,
+        0x02
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_FHD_01[] = {
+        0x2A,
+        0x00, 0x00, 0x04, 0x37
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_FHD_02[] = {
+        0x2B,
+        0x00, 0x00, 0x07, 0x7F
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_HD_00[] = {
+        0xBA,
+        0x00
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_HD_01[] = {
+        0x2A,
+	0x00, 0x00, 0x02, 0xCF,
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_HD_02[] = {
+        0x2B,
+	0x00, 0x00, 0x04, 0xFF,
+};
+
+static const unsigned char S6E3HA3_SEQ_DDI_SCALER_WQHD_00[] = {
+        0xBA,
+        0x01
+};
+#endif
+
+
 #ifdef CONFIG_PANEL_S6E3HF3_DYNAMIC			// only edge panel
 #if defined(CONFIG_SEC_FACTORY) && defined(CONFIG_EXYNOS_DECON_LCD_MCD)
 static const unsigned char SEQ_MCD_ON_SET1[] = {
@@ -1012,6 +1087,43 @@ static const unsigned char S6E3HF3_SEQ_PENTILE_SETTING[] = {
 	0x08, 0x0E, 0x07, 0x0B, 0x05, 0x0D, 0x0A, 0x15,
 	0x13, 0x20, 0x1E
 };
+
+#if defined(CONFIG_FB_DSU)
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_FHD_00[] = {
+        0xBA,
+        0x02
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_FHD_01[] = {
+        0x2A,
+        0x00, 0x3C, 0x04, 0x73
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_FHD_02[] = {
+        0x2B,
+        0x00, 0x00, 0x07, 0x7F
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_HD_00[] = {
+        0xBA,
+        0x00
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_HD_01[] = {
+	0x2A,
+	0x00, 0x28, 0x02, 0xF7,
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_HD_02[] = {
+	0x2B,
+	0x00, 0x00, 0x04, 0xFF,
+};
+
+static const unsigned char S6E3HF3_SEQ_DDI_SCALER_WQHD_00[] = {
+        0xBA,
+        0x01
+};
+#endif
 
 static const unsigned char S6E3HF3_SEQ_PCD[] = {
         0xCC,

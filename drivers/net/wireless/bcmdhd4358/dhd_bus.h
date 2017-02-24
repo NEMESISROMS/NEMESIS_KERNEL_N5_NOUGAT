@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_bus.h 667273 2016-10-26 13:27:59Z $
+ * $Id: dhd_bus.h 517443 2014-11-25 09:49:34Z $
  */
 
 #ifndef _dhd_bus_h_
@@ -177,7 +177,6 @@ extern void dhd_bus_flow_ring_flush_response(struct dhd_bus *bus, uint16 flowid,
 extern uint8 dhd_bus_is_txmode_push(struct dhd_bus *bus);
 extern uint32 dhd_bus_max_h2d_queues(struct dhd_bus *bus, uint8 *txpush);
 extern int dhd_bus_schedule_queue(struct dhd_bus *bus, uint16 flow_id, bool txs);
-extern void dhd_bus_set_linkdown(dhd_pub_t *dhdp, bool val);
 extern int dhdpcie_bus_clock_start(struct dhd_bus *bus);
 extern int dhdpcie_bus_clock_stop(struct dhd_bus *bus);
 extern int dhdpcie_bus_enable_device(struct dhd_bus *bus);
@@ -193,5 +192,10 @@ extern int dhd_bus_request_irq(struct dhd_bus *bus);
 extern void bus_wake(struct dhd_bus *bus);
 extern bool bus_wakeup(dhd_pub_t *pub);
 #endif /* DHD_USE_IDLECOUNT */
+
+#if 1 
+extern int dhd_dongle_mem_dump(void);
+#endif
+
 #endif /* BCMPCIE */
 #endif /* _dhd_bus_h_ */

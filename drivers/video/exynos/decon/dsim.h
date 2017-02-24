@@ -197,6 +197,9 @@ struct dsim_panel_ops {
 	int (*enteralpm)(struct dsim_device *dsim);
 	int (*exitalpm)(struct dsim_device *dsim);
 #endif
+#ifdef CONFIG_FB_DSU
+	int (*dsu_cmd)(struct dsim_device *dsim);
+#endif
 };
 
 struct dsim_device {
@@ -244,6 +247,14 @@ struct dsim_device {
 #ifdef CONFIG_LCD_DOZE_MODE
 	unsigned int dsim_doze;
 #endif
+#ifdef CONFIG_FB_DSU
+	int dsu_xres;
+	int dsu_yres;
+	struct workqueue_struct *dsu_sysfs_wq;
+	struct delayed_work dsu_sysfs_work;
+	unsigned int	dsu_param_offset;
+	unsigned int	dsu_param_value;
+#endif
 };
 
 /**
@@ -264,6 +275,11 @@ struct mipi_dsim_lcd_driver {
 #ifdef CONFIG_LCD_DOZE_MODE
 	int (*enteralpm)(struct dsim_device *dsim);
 	int (*exitalpm)(struct dsim_device *dsim);
+#endif
+#ifdef CONFIG_FB_DSU
+	int (*dsu_cmd)(struct dsim_device *dsim);
+	int (*init)(struct dsim_device *dsim);
+	int (*dsu_sysfs) (struct dsim_device *dsim);
 #endif
 };
 
@@ -341,6 +357,15 @@ static inline void dsim_write_mask(u32 id, u32 reg_id, u32 val, u32 mask)
 #define DSIM_IOC_PARTIAL_CMD		_IOW('D', 6, u32)
 #define DSIM_IOC_SET_PORCH		_IOW('D', 7, struct decon_lcd *)
 #define DSIM_IOC_DUMP			_IOW('D', 8, u32)
+
+#ifdef CONFIG_FB_DSU
+#define DSIM_IOC_DSU_CMD            _IOW('D', 12, u32)
+//#define DSIM_IOC_DSU_DSC            _IOW('D', 13, u32)
+#define DSIM_IOC_TE_ONOFF           _IOW('D', 14, u32)
+#define DSIM_IOC_DSU_RECONFIG   _IOW('D', 15, u32)
+#define DSIM_IOC_DISPLAY_ONOFF	    _IOW('D', 16, u32)
+//#define DSIM_IOC_REG_LOCK	_IOW('D', 17, u32)
+#endif
 
 #define DSIM_REQ_POWER_OFF		0
 #define DSIM_REQ_POWER_ON		1

@@ -24,7 +24,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: wl_android.c 667735 2016-10-28 09:04:56Z $
+ * $Id: wl_android.c 675083 2016-12-14 05:36:31Z $
  */
 
 #include <linux/module.h>
@@ -2195,8 +2195,9 @@ wls_parse_batching_cmd(struct net_device *dev, char *command, int total_len)
 					" <> params\n", __FUNCTION__));
 					goto exit;
 				}
-				while ((token2 = strsep(&pos2,
-						PNO_PARAM_CHANNEL_DELIMETER)) != NULL) {
+
+				while ((token2 = strsep(&pos2, PNO_PARAM_CHANNEL_DELIMETER))
+						!= NULL) {
 					if (token2 == NULL || !*token2)
 						break;
 					if (*token2 == '\0')
@@ -2208,7 +2209,7 @@ wls_parse_batching_cmd(struct net_device *dev, char *command, int total_len)
 							(*token2 == 'A')? "A" : "B"));
 					} else {
 						if ((batch_params.nchan >= WL_NUMCHANNELS) ||
-							(i >= WL_NUMCHANNELS)) {
+						    	(i >= WL_NUMCHANNELS)) {
 							DHD_ERROR(("Too many nchan %d\n",
 								batch_params.nchan));
 							err = BCME_BUFTOOSHORT;

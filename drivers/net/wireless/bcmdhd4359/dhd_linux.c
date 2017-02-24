@@ -25,7 +25,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: dhd_linux.c 670035 2016-11-13 04:51:31Z $
+ * $Id: dhd_linux.c 674974 2016-12-13 12:58:55Z $
  */
 
 #include <typedefs.h>
@@ -206,6 +206,10 @@ static u32 vendor_oui = CONFIG_DHD_SET_RANDOM_MAC_VAL;
 #endif
 
 #include <wl_android.h>
+#include <linux/moduleparam.h>
+
+static int wl_divide = 2;
+module_param(wl_divide, int, 0644);
 
 /* Maximum STA per radio */
 #define DHD_MAX_STA     32
@@ -338,6 +342,16 @@ extern int dhd_logtrace_from_file(dhd_pub_t *dhd);
 #endif /* CUSTOMER_HW4 */
 
 #ifdef ARGOS_CPU_SCHEDULER
+#if defined(CONFIG_SPLIT_ARGOS_SET)
+#define ARGOS_WIFI_TABLE_LABEL "WIFI RX"
+#if defined(DYNAMIC_MUMIMO_CONTROL)
+#define ARGOS_WIFI_TABLE_FOR_MIMO_LABEL "WIFI"
+#endif /* DYNAMIC_MUMIMO_CONTROL */
+#else /* CONFIG_SPLIT_ARGOS_SET */
+#define ARGOS_WIFI_TABLE_LABEL "WIFI"
+#endif /* CONFIG_SPLIT_ARGOS_SET  */
+#define ARGOS_P2P_TABLE_LABEL "P2P"
+
 extern int argos_task_affinity_setup_label(struct task_struct *p, const char *label,
 	struct cpumask * affinity_cpu_mask, struct cpumask * default_cpu_mask);
 extern struct cpumask hmp_slow_cpu_mask;
@@ -361,9 +375,17 @@ static int argos_status_notifier_wifi_cb(struct notifier_block *notifier,
 static int argos_status_notifier_p2p_cb(struct notifier_block *notifier,
 	unsigned long speed, void *v);
 
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+static int argos_status_notifier_config_mumimo_cb(struct notifier_block *notifier,
+	unsigned long speed, void *v);
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
+
 /* ARGOS notifer data */
 static struct notifier_block argos_wifi; /* STA */
 static struct notifier_block argos_p2p; /* P2P */
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+static struct notifier_block argos_mimo; /* STA */
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
 
 typedef struct {
 	struct net_device *wlan_primary_netdev;
@@ -388,10 +410,6 @@ argos_mumimo_ctrl argos_mumimo_ctrl_data;
 #define SUMIMO_TO_MUMIMO_TPUT_THRESHOLD		0
 #define MUMIMO_TO_SUMIMO_TPUT_THRESHOLD		150
 #endif /* ARGOS_RPS_CPU_CTL && ARGOS_CPU_SCHEDULER */
-
-#ifdef DYNAMIC_MUMIMO_CONTROL
-bool dhd_check_tx_eapol_m4(struct net_device *ndev, dhd_pub_t *dhdp, void *pkt);
-#endif /* DYNAMIC_MUMIMO_CONTROL */
 
 
 
@@ -5230,17 +5248,7 @@ void dhd_dpc_enable(dhd_pub_t *dhdp)
 #ifdef DHD_LB_RXP
 	__skb_queue_head_init(&dhd->rx_pend_queue);
 #endif /* DHD_LB_RXP */
-#ifdef DHD_LB_TXC
-	if (atomic_read(&dhd->tx_compl_tasklet.count) == 1)
-		tasklet_enable(&dhd->tx_compl_tasklet);
-#endif /* DHD_LB_TXC */
-#ifdef DHD_LB_RXC
-	if (atomic_read(&dhd->rx_compl_tasklet.count) == 1)
-		tasklet_enable(&dhd->rx_compl_tasklet);
-#endif /* DHD_LB_RXC */
 #endif /* DHD_LB */
-	if (atomic_read(&dhd->tasklet.count) ==  1)
-		tasklet_enable(&dhd->tasklet);
 }
 #endif /* BCMPCIE */
 
@@ -5262,7 +5270,6 @@ dhd_dpc_kill(dhd_pub_t *dhdp)
 	}
 
 	if (dhd->thr_dpc_ctl.thr_pid < 0) {
-		tasklet_disable(&dhd->tasklet);
 		tasklet_kill(&dhd->tasklet);
 		DHD_ERROR(("%s: tasklet disabled\n", __FUNCTION__));
 	}
@@ -5272,11 +5279,9 @@ dhd_dpc_kill(dhd_pub_t *dhdp)
 #endif /* DHD_LB_RXP */
 	/* Kill the Load Balancing Tasklets */
 #if defined(DHD_LB_TXC)
-	tasklet_disable(&dhd->tx_compl_tasklet);
 	tasklet_kill(&dhd->tx_compl_tasklet);
 #endif /* DHD_LB_TXC */
 #if defined(DHD_LB_RXC)
-	tasklet_disable(&dhd->rx_compl_tasklet);
 	tasklet_kill(&dhd->rx_compl_tasklet);
 #endif /* DHD_LB_RXC */
 #endif /* DHD_LB */
@@ -7228,6 +7233,10 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	spin_lock_init(&dhd->txqlock);
 	spin_lock_init(&dhd->dhd_lock);
 	spin_lock_init(&dhd->rxf_lock);
+#ifdef WLTDLS
+	spin_lock_init(&dhd->pub.tdls_lock);
+#endif /* WLTDLS */
+
 #if defined(RXFRAME_THREAD)
 	dhd->rxthread_enabled = TRUE;
 #endif /* defined(RXFRAME_THREAD) */
@@ -7953,6 +7962,7 @@ void dhd_tdls_update_peer_info(struct net_device *dev, bool connect, uint8 *da)
 	dhd_if_t *dhdif;
 	uint8 sa[ETHER_ADDR_LEN];
 	int ifidx = dhd_net2idx(dhd, dev);
+	unsigned long flags;
 
 	if (ifidx == DHD_BAD_IF)
 		return;
@@ -7976,20 +7986,23 @@ void dhd_tdls_update_peer_info(struct net_device *dev, bool connect, uint8 *da)
 			return;
 		}
 		memcpy(new->addr, da, ETHER_ADDR_LEN);
+		DHD_TDLS_LOCK(&dhdp->tdls_lock, flags);
 		new->next = dhdp->peer_tbl.node;
 		dhdp->peer_tbl.node = new;
 		dhdp->peer_tbl.tdls_peer_count++;
-
+		DHD_TDLS_UNLOCK(&dhdp->tdls_lock, flags);
 	} else {
 		while (cur != NULL) {
 			if (!memcmp(da, cur->addr, ETHER_ADDR_LEN)) {
 				dhd_flow_rings_delete_for_peer(dhdp, ifidx, da);
+				DHD_TDLS_LOCK(&dhdp->tdls_lock, flags);
 				if (prev)
 					prev->next = cur->next;
 				else
 					dhdp->peer_tbl.node = cur->next;
 				MFREE(dhdp->osh, cur, sizeof(tdls_peer_node_t));
 				dhdp->peer_tbl.tdls_peer_count--;
+				DHD_TDLS_UNLOCK(&dhdp->tdls_lock, flags);
 				return;
 			}
 			prev = cur;
@@ -10719,7 +10732,7 @@ dhd_os_tcpackunlock(dhd_pub_t *pub, unsigned long flags)
 
 	if (dhd) {
 #ifdef BCMSDIO
-		spin_lock_bh(&dhd->tcpack_lock);
+		spin_unlock_bh(&dhd->tcpack_lock);
 #else
 		spin_unlock_irqrestore(&dhd->tcpack_lock, flags);
 #endif /* BCMSDIO */
@@ -12624,10 +12637,10 @@ int dhd_os_wake_lock_timeout(dhd_pub_t *pub)
 #ifdef CONFIG_HAS_WAKELOCK
 		if (dhd->wakelock_rx_timeout_enable)
 			wake_lock_timeout(&dhd->wl_rxwake,
-				msecs_to_jiffies(dhd->wakelock_rx_timeout_enable));
+				msecs_to_jiffies(dhd->wakelock_rx_timeout_enable)/wl_divide);
 		if (dhd->wakelock_ctrl_timeout_enable)
 			wake_lock_timeout(&dhd->wl_ctrlwake,
-				msecs_to_jiffies(dhd->wakelock_ctrl_timeout_enable));
+				msecs_to_jiffies(dhd->wakelock_ctrl_timeout_enable)/wl_divide);
 #endif
 		dhd->wakelock_rx_timeout_enable = 0;
 		dhd->wakelock_ctrl_timeout_enable = 0;
@@ -14386,7 +14399,7 @@ argos_config_mumimo_handler(struct work_struct *work)
 		DHD_ERROR(("%s: Failed to set murx_bfe_cap to %d, err=%d\n",
 			__FUNCTION__, new_cap, err));
 	} else {
-		DHD_INFO(("%s: Newly configured murx_bfe_cap = %d\n",
+		DHD_ERROR(("%s: Newly configured murx_bfe_cap = %d\n",
 			__FUNCTION__, new_cap));
 	}
 }
@@ -14452,7 +14465,7 @@ argos_status_notifier_config_mumimo(struct notifier_block *notifier,
 		mod_timer(&argos_mumimo_ctrl_data.config_timer,
 			jiffies + msecs_to_jiffies(MUMIMO_CONTROL_TIMER_INTERVAL_MS));
 
-		DHD_INFO(("%s: Arm the MU-MIMO control timer, cur_murx_bfe_cap=%d\n",
+		DHD_ERROR(("%s: Arm the MU-MIMO control timer, cur_murx_bfe_cap=%d\n",
 			__FUNCTION__, cap));
 	}
 }
@@ -14478,6 +14491,12 @@ argos_config_mumimo_deinit(void)
 
 	cancel_work_sync(&argos_mumimo_ctrl_data.mumimo_ctrl_work);
 }
+
+void
+argos_config_mumimo_reset(void)
+{
+	argos_mumimo_ctrl_data.cur_murx_bfe_cap = -1;
+}
 #endif /* DYNAMIC_MUMIMO_CONTROL */
 
 int
@@ -14494,19 +14513,34 @@ argos_register_notifier_init(struct net_device *net)
 
 	if (argos_wifi.notifier_call == NULL) {
 		argos_wifi.notifier_call = argos_status_notifier_wifi_cb;
-		ret = sec_argos_register_notifier(&argos_wifi, "WIFI");
+		ret = sec_argos_register_notifier(&argos_wifi, ARGOS_WIFI_TABLE_LABEL);
 		if (ret < 0) {
 			DHD_ERROR(("DHD:Failed to register WIFI notifier, ret=%d\n", ret));
 			goto exit;
 		}
 	}
 
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+	if (argos_mimo.notifier_call == NULL) {
+		argos_mimo.notifier_call = argos_status_notifier_config_mumimo_cb;
+		ret = sec_argos_register_notifier(&argos_mimo, ARGOS_WIFI_TABLE_FOR_MIMO_LABEL);
+		if (ret < 0) {
+			DHD_ERROR(("DHD:Failed to register WIFI for MIMO notifier, ret=%d\n", ret));
+			sec_argos_unregister_notifier(&argos_wifi, ARGOS_WIFI_TABLE_LABEL);
+			goto exit;
+		}
+	}
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
+
 	if (argos_p2p.notifier_call == NULL) {
 		argos_p2p.notifier_call = argos_status_notifier_p2p_cb;
-		ret = sec_argos_register_notifier(&argos_p2p, "P2P");
+		ret = sec_argos_register_notifier(&argos_p2p, ARGOS_P2P_TABLE_LABEL);
 		if (ret < 0) {
 			DHD_ERROR(("DHD:Failed to register P2P notifier, ret=%d\n", ret));
-			sec_argos_unregister_notifier(&argos_wifi, "WIFI");
+			sec_argos_unregister_notifier(&argos_wifi, ARGOS_WIFI_TABLE_LABEL);
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+			sec_argos_unregister_notifier(&argos_mimo, ARGOS_WIFI_TABLE_FOR_MIMO_LABEL);
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
 			goto exit;
 		}
 	}
@@ -14517,6 +14551,12 @@ exit:
 	if (argos_wifi.notifier_call) {
 		argos_wifi.notifier_call = NULL;
 	}
+
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+	if (argos_mimo.notifier_call) {
+		argos_mimo.notifier_call = NULL;
+	}
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
 
 	if (argos_p2p.notifier_call) {
 		argos_p2p.notifier_call = NULL;
@@ -14544,12 +14584,19 @@ argos_register_notifier_deinit(void)
 #endif /* !DHD_LB */
 
 	if (argos_p2p.notifier_call) {
-		sec_argos_unregister_notifier(&argos_p2p, "P2P");
+		sec_argos_unregister_notifier(&argos_p2p, ARGOS_P2P_TABLE_LABEL);
 		argos_p2p.notifier_call = NULL;
 	}
 
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+	if (argos_mimo.notifier_call) {
+		sec_argos_unregister_notifier(&argos_mimo, ARGOS_WIFI_TABLE_FOR_MIMO_LABEL);
+		argos_mimo.notifier_call = NULL;
+	}
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
+
 	if (argos_wifi.notifier_call) {
-		sec_argos_unregister_notifier(&argos_wifi, "WIFI");
+		sec_argos_unregister_notifier(&argos_wifi, ARGOS_WIFI_TABLE_LABEL);
 		argos_wifi.notifier_call = NULL;
 	}
 
@@ -14650,54 +14697,35 @@ argos_status_notifier_wifi_cb(struct notifier_block *notifier,
 {
 	DHD_ERROR(("DHD: %s: speed=%ld\n", __FUNCTION__, speed));
 	argos_status_notifier_cb(notifier, speed, v);
-#ifdef DYNAMIC_MUMIMO_CONTROL
+#if !defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
 	argos_status_notifier_config_mumimo(notifier, speed, v);
-#endif /* DYNAMIC_MUMIMO_CONTROL */
+#endif /* !CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
 
 	return NOTIFY_OK;
 }
+
+#if defined(CONFIG_SPLIT_ARGOS_SET) && defined(DYNAMIC_MUMIMO_CONTROL)
+int
+argos_status_notifier_config_mumimo_cb(struct notifier_block *notifier,
+	unsigned long speed, void *v)
+{
+	DHD_ERROR(("DHD: %s: speed=%ld\n", __FUNCTION__, speed));
+	argos_status_notifier_config_mumimo(notifier, speed, v);
+
+	return NOTIFY_OK;
+}
+#endif /* CONFIG_SPLIT_ARGOS_SET && DYNAMIC_MUMIMO_CONTROL */
 
 int
 argos_status_notifier_p2p_cb(struct notifier_block *notifier,
 	unsigned long speed, void *v)
 {
-	DHD_INFO(("DHD: %s: speed=%ld\n", __FUNCTION__, speed));
+	DHD_ERROR(("DHD: %s: speed=%ld\n", __FUNCTION__, speed));
 	argos_status_notifier_cb(notifier, speed, v);
 
 	return NOTIFY_OK;
 }
 #endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
-
-#ifdef DYNAMIC_MUMIMO_CONTROL
-bool
-dhd_check_tx_eapol_m4(struct net_device *ndev, dhd_pub_t *dhdp, void *pkt)
-{
-	uint8 *dump_data;
-	uint8 type;
-	uint16 protocol, key_info;
-	int pair, ack, mic, kerr, req, sec, install, ism4;
-
-	dump_data = PKTDATA(dhdp->osh, pkt);
-	protocol = (dump_data[12] << 8) | dump_data[13];
-	type = dump_data[18];
-	key_info = (dump_data[19] << 8) | dump_data[20];
-	pair = key_info & 0x08;
-	ack = key_info & 0x80;
-	mic = key_info & 0x100;
-	kerr = key_info & 0x400;
-	req = key_info & 0x800;
-	sec = key_info & 0x200;
-	install = key_info & 0x40;
-	ism4 = pair && !install && !ack && mic && sec && !req && !kerr;
-
-	if (protocol == ETHER_TYPE_802_1X && (type == 2 || type == 254) && ism4) {
-		DHD_INFO(("%s: Send EAPOL M4 Packet\n", __FUNCTION__));
-		return TRUE;
-	}
-
-	return FALSE;
-}
-#endif /* DYNAMIC_MUMIMO_CONTROL */
 
 
 #ifdef DHD_DEBUG_PAGEALLOC
@@ -15140,8 +15168,8 @@ dhd_write_file(const char *filepath, char *buf, int buf_len)
 	/* File is always created. */
 	fp = filp_open(filepath, O_RDWR | O_CREAT, 0664);
 	if (IS_ERR(fp)) {
-		DHD_ERROR(("%s: Couldn't open file '%s'\n",
-			__FUNCTION__, filepath));
+		DHD_ERROR(("%s: Couldn't open file '%s' err %ld\n",
+			__FUNCTION__, filepath, PTR_ERR(fp)));
 		ret = BCME_ERROR;
 	} else {
 		if (fp->f_mode & FMODE_WRITE) {

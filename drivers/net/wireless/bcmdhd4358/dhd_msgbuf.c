@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_msgbuf.c 675074 2016-12-14 05:03:15Z $
+ * $Id: dhd_msgbuf.c 637308 2016-05-12 07:21:25Z $
  */
 #include <typedefs.h>
 #include <osl.h>
@@ -381,10 +381,10 @@ dhd_prot_d2h_sync_seqnum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
 
 			OSL_CACHE_INV(msg, msglen); /* invalidate and try again */
 			OSL_CPU_RELAX(); /* CPU relax for msg_seqnum  value to update */
-#ifdef CONFIG_ARCH_MSM8996
+#if defined(CONFIG_ARCH_MSM8996) || defined(CONFIG_SOC_EXYNOS8890)
 			/* For ARM there is no pause in cpu_relax, so add extra delay */
 			OSL_DELAY(delay * step);
-#endif /* CONFIG_ARCH_MSM8996 */
+#endif /* defined(CONFIG_ARCH_MSM8996) || defined(CONFIG_SOC_EXYNOS8890) */
 		} /* for PCIE_D2H_SYNC_WAIT_TRIES */
 	} /* for number of steps */
 
@@ -454,10 +454,10 @@ dhd_prot_d2h_sync_xorcsum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
 
 			OSL_CACHE_INV(msg, msglen); /* invalidate and try again */
 			OSL_CPU_RELAX(); /* CPU relax for msg_seqnum  value to update */
-#ifdef CONFIG_ARCH_MSM8996
+#if defined(CONFIG_ARCH_MSM8996) || defined(CONFIG_SOC_EXYNOS8890)
 			/* For ARM there is no pause in cpu_relax, so add extra delay */
 			OSL_DELAY(delay * step);
-#endif /* CONFIG_ARCH_MSM8996 */
+#endif /* defined(CONFIG_ARCH_MSM8996) || defined(CONFIG_SOC_EXYNOS8890) */
 
 		} /* for PCIE_D2H_SYNC_WAIT_TRIES */
 	} /* for number of steps */
@@ -2713,16 +2713,10 @@ dhd_prot_txstatus_process(dhd_pub_t *dhd, void * buf, uint16 msglen)
 #endif /* DHD_PKTID_AUDIT_RING */
 
 	DHD_INFO(("txstatus for pktid 0x%04x\n", pktid));
-	if (prot->active_tx_count) {
+	if (prot->active_tx_count)
 		prot->active_tx_count--;
-
-		/* Release the Lock when no more tx packets are pending */
-		if (prot->active_tx_count == 0)
-			 DHD_TXFL_WAKE_UNLOCK(dhd);
-
-	} else {
+	else
 		DHD_ERROR(("Extra packets are freed\n"));
-	}
 
 	ASSERT(pktid != 0);
 	pkt = dhd_prot_packet_get(dhd, pktid, BUFF_TYPE_DATA_TX);
@@ -3092,13 +3086,6 @@ dhd_prot_txdata(dhd_pub_t *dhd, void *PKTBUF, uint8 ifidx)
 #endif
 
 	prot->active_tx_count++;
-
-	/*
-	 * Take a wake lock, do not sleep if we have atleast one packet
-	 * to finish.
-	 */
-	if (prot->active_tx_count == 1)
-		DHD_TXFL_WAKE_LOCK(dhd);
 
 	DHD_GENERAL_UNLOCK(dhd, flags);
 
@@ -3485,33 +3472,20 @@ dhdmsgbuf_query_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint len, 
 	dhd_prot_t *prot = dhd->prot;
 
 	int ret = 0;
-	uint copylen = 0;
 
 	DHD_TRACE(("%s: Enter\n", __FUNCTION__));
 
+	/* Respond "bcmerror" and "bcmerrorstr" with local cache */
 	if (cmd == WLC_GET_VAR && buf)
 	{
-		if (!len || !*(uint8 *)buf) {
-			DHD_ERROR(("%s(): Zero length bailing\n", __FUNCTION__));
-			ret = BCME_BADARG;
+		if (!strcmp((char *)buf, "bcmerrorstr"))
+		{
+			strncpy((char *)buf, bcmerrorstr(dhd->dongle_error), BCME_STRLEN);
 			goto done;
 		}
-
-		/* Respond "bcmerror" and "bcmerrorstr" with local cache */
-		copylen = MIN(len, BCME_STRLEN);
-
-		if ((len >= strlen("bcmerrorstr")) &&
-			(!strcmp((char *)buf, "bcmerrorstr"))) {
-
-			strncpy((char *)buf, bcmerrorstr(dhd->dongle_error), copylen);
-			*(uint8 *)((uint8 *)buf + (copylen - 1)) = '\0';
-
-			goto done;
-		} else if ((len >= strlen("bcmerror")) &&
-			!strcmp((char *)buf, "bcmerror")) {
-
-			*(uint32 *)(uint32 *)buf = dhd->dongle_error;
-
+		else if (!strcmp((char *)buf, "bcmerror"))
+		{
+			*(int *)buf = dhd->dongle_error;
 			goto done;
 		}
 	}

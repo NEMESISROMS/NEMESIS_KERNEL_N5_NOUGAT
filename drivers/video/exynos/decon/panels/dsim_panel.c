@@ -33,6 +33,10 @@
 #endif
 #endif
 
+#ifdef CONFIG_FB_DSU
+#include <linux/sec_debug.h>
+#endif
+
 #if defined(CONFIG_EXYNOS_DECON_MDNIE_LITE)
 static int mdnie_lite_write_set(struct dsim_device *dsim, struct lcd_seq_info *seq, u32 num)
 {
@@ -100,6 +104,74 @@ static int dsim_panel_early_probe(struct dsim_device *dsim)
 	return ret;
 }
 
+#ifdef CONFIG_FB_DSU
+static unsigned int	dsu_param_offset = 0;
+static unsigned int	dsu_param_value = 0;
+struct dsim_device *dsu_temp_dsim;
+
+static void dsim_dsu_sysfs_handler(struct work_struct *work)
+{
+	struct dsim_device *dsim = dsu_temp_dsim;
+	int ret;
+	int i;
+
+	dsim_info("%s called\n", __func__ );
+
+	if( dsim->dsu_param_offset==0 ) {
+		pr_err( "%s: failed. offset not exist\n", __func__ );
+	}
+
+	for( i=0; i<ARRAY_SIZE(dsu_config); i++ ) {
+		if( dsu_config[i].xres == dsim->dsu_xres && dsu_config[i].yres == dsim->dsu_yres ) {
+			if( dsim->dsu_param_value != dsu_config[i].value ) {
+				dsim->dsu_param_value = dsu_config[i].value;
+				ret = sec_set_param((unsigned long) dsim->dsu_param_offset, dsim->dsu_param_value);
+				pr_info( "%s:%s,%d,%d\n", __func__, dsu_config[i].id_str, dsim->dsu_param_value, ret );
+			}  else {
+				pr_info( "%s:%s,%d,%d (same)\n", __func__, dsu_config[i].id_str, dsim->dsu_param_value, ret );
+			}
+			return;
+		}
+	}
+
+	pr_err( "%s: search fail. (xres=%d,yres=%d)\n", __func__, dsim->dsu_xres, dsim->dsu_yres );
+	return;
+}
+
+static int dsim_dsu_sysfs(struct dsim_device *dsim)
+{
+	int ret = 0;
+
+	dsim_info("%s was called (DSU)\n", __func__);
+	dsu_temp_dsim = dsim;
+	ret = queue_delayed_work( dsim->dsu_sysfs_wq, &dsim->dsu_sysfs_work, msecs_to_jiffies(50));
+	return ret;
+}
+
+static int dsim_panel_dsu_cmd(struct dsim_device *dsim)
+{
+	int ret = 0;
+	struct panel_private *panel = &dsim->priv;
+
+	dsim_info("%s was called\n", __func__);
+	if (panel->ops->dsu_cmd)
+		ret = panel->ops->dsu_cmd(dsim);
+	dsim_dsu_sysfs( dsim );
+	return ret;
+}
+
+static int dsim_panel_init(struct dsim_device *dsim)
+{
+	int ret = 0;
+	struct panel_private *panel = &dsim->priv;
+
+	dsim_info("%s was called (DSU)\n", __func__);
+	if (panel->ops->init)
+		ret = panel->ops->init(dsim);
+	return ret;
+}
+#endif 
+
 static int dsim_panel_probe(struct dsim_device *dsim)
 {
 	int ret = 0;
@@ -154,6 +226,17 @@ static int dsim_panel_probe(struct dsim_device *dsim)
 		mdnie_register(&dsim->lcd->dev, dsim, (mdnie_w)mdnie_lite_send_seq, (mdnie_r)mdnie_lite_read, panel->coordinate, &tune_info);
 		panel->mdnie_class = get_mdnie_class();
 	}
+#endif
+
+#if defined(CONFIG_FB_DSU)
+	dsim->dsu_param_value = dsu_param_value;
+	dsim->dsu_param_offset = dsu_param_offset;
+	dsim->dsu_sysfs_wq = create_singlethread_workqueue( "dsu_sysfs");
+	if( dsim->dsu_sysfs_wq ) {
+		INIT_DELAYED_WORK( &dsim->dsu_sysfs_work, dsim_dsu_sysfs_handler );
+		flush_workqueue( dsim->dsu_sysfs_wq );
+	}
+	else dsim_err( "%s : dsu_sysfs_wq init fail.\n", __func__ );
 #endif
 
 probe_err:
@@ -334,7 +417,11 @@ static struct mipi_dsim_lcd_driver mipi_lcd_driver = {
 	.enteralpm = dsim_panel_enteralpm,
 	.exitalpm = dsim_panel_exitalpm,
 #endif
-
+#ifdef CONFIG_FB_DSU
+	.dsu_cmd = dsim_panel_dsu_cmd,
+	.init = dsim_panel_init,
+	.dsu_sysfs = dsim_dsu_sysfs,
+#endif
 };
 
 
@@ -361,4 +448,27 @@ static int __init get_lcd_type(char *arg)
 	return 0;
 }
 early_param("lcdtype", get_lcd_type);
+
+#ifdef CONFIG_FB_DSU
+static int __init get_dsu_config(char *arg)
+{
+	int ret;
+
+	ret = get_option(&arg, (unsigned int*) &dsu_param_offset);
+	if( ret != 2 ) goto err_get_dsu_config;
+
+	ret = get_option(&arg, (unsigned int*) &dsu_param_value);
+	if( ret != 1 ) goto err_get_dsu_config;
+
+	pr_info( "%s:%u, %X\n", __func__, dsu_param_value, dsu_param_offset );
+	return 0;
+
+err_get_dsu_config:
+	pr_err( "%s : option fail(%s,%d)\n", __func__, arg, ret );
+	dsu_param_offset = 0;
+	dsu_param_value = 0;
+	return -EINVAL;
+}
+early_param("lcdres_offset", get_dsu_config);
+#endif
 

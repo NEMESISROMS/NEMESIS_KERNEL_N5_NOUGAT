@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_sdio.c 666677 2016-10-24 08:20:46Z $
+ * $Id: dhd_sdio.c 630539 2016-04-11 05:14:41Z $
  */
 
 #include <typedefs.h>
@@ -2246,11 +2246,8 @@ dhdsdio_sendfromq(dhd_bus_t *bus, uint maxframes)
 			}
 #ifdef DHD_LOSSLESS_ROAMING
 			pktdata = (uint8 *)PKTDATA(osh, pkts[i]);
-#ifdef BDC
-			/* Skip BDC header */
-			pktdata += BDC_HEADER_LEN + ((struct bdc_header *)pktdata)->dataOffset;
-#endif
 			eh = (struct ether_header *)pktdata;
+
 			if (eh->ether_type == hton16(ETHER_TYPE_802_1X)) {
 				uint8 prio = (uint8)PKTPRIO(pkts[i]);
 

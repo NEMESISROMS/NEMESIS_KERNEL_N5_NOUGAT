@@ -336,19 +336,13 @@ dhd_flow_rings_ifindex2role(dhd_pub_t *dhdp, uint8 ifindex)
 #ifdef WLTDLS
 bool is_tdls_destination(dhd_pub_t *dhdp, uint8 *da)
 {
-	unsigned long flags;
-	tdls_peer_node_t *cur = NULL;
-
-	DHD_TDLS_LOCK(&dhdp->tdls_lock, flags);
-	cur = dhdp->peer_tbl.node;
+	tdls_peer_node_t *cur = dhdp->peer_tbl.node;
 	while (cur != NULL) {
 		if (!memcmp(da, cur->addr, ETHER_ADDR_LEN)) {
-			DHD_TDLS_UNLOCK(&dhdp->tdls_lock, flags);
 			return TRUE;
 		}
 		cur = cur->next;
 	}
-	DHD_TDLS_UNLOCK(&dhdp->tdls_lock, flags);
 	return FALSE;
 }
 #endif /* WLTDLS */

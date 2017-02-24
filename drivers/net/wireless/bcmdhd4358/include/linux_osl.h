@@ -179,7 +179,8 @@ extern void osl_dma_unmap(osl_t *osh, dmaaddr_t pa, uint size, int direction);
 extern void osl_cpu_relax(void);
 #define OSL_CPU_RELAX() osl_cpu_relax()
 
-#if (defined(USE_KMALLOC_FOR_FLOW_RING) && defined(__ARM_ARCH_7A__))
+#if (defined(USE_KMALLOC_FOR_FLOW_RING) && defined(__ARM_ARCH_7A__)) || \
+	defined(CONFIG_SOC_EXYNOS8890)
 	extern void osl_cache_flush(void *va, uint size);
 	extern void osl_cache_inv(void *va, uint size);
 	extern void osl_prefetch(const void *ptr);

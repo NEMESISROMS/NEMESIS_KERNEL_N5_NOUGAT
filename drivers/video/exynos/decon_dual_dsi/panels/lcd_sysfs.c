@@ -744,7 +744,9 @@ static ssize_t adaptive_control_store(struct device *dev,
 	else {
 		if (priv->adaptive_control != value) {
 			dev_info(dev, "%s: %d, %d\n", __func__, priv->adaptive_control, value);
+			mutex_lock(&priv->lock);
 			priv->adaptive_control = value;
+			mutex_unlock(&priv->lock);
 			panel_set_brightness(dsim, 0);
 		}
 	}

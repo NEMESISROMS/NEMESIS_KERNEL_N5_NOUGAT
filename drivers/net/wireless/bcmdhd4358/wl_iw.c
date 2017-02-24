@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: wl_iw.c 676314 2016-12-21 10:40:57Z $
+ * $Id: wl_iw.c 467328 2014-04-03 01:23:40Z $
  */
 
 #if defined(USE_IW)
@@ -695,7 +695,7 @@ wl_iw_get_range(
 )
 {
 	struct iw_range *range = (struct iw_range *) extra;
-	static int channels[MAXCHANNEL];
+	static int channels[MAXCHANNEL+1];
 	wl_uint32_list_t *list = (wl_uint32_list_t *) channels;
 	wl_rateset_t rateset;
 	int error, i, k;

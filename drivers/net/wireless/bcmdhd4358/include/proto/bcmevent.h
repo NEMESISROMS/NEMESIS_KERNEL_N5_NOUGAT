@@ -23,7 +23,7 @@
  *
  * Dependencies: proto/bcmeth.h
  *
- * $Id: bcmevent.h 655384 2016-08-19 09:32:18Z $
+ * $Id: bcmevent.h 539956 2015-03-10 12:20:45Z $
  *
  */
 
@@ -93,19 +93,6 @@ typedef BWL_PRE_PACKED_STRUCT struct bcm_event {
 	wl_event_msg_t		event;
 	/* data portion follows */
 } BWL_POST_PACKED_STRUCT bcm_event_t;
-
-/*
- * used by host event
- * note: if additional event types are added, it should go with is_wlc_event_frame() as well.
- */
-typedef union bcm_event_msg_u {
-	wl_event_msg_t		event;
-#if defined(HEALTH_CHECK) || defined(DNGL_EVENT_SUPPORT)
-	bcm_dngl_event_msg_t	dngl_event;
-#endif /* HEALTH_CHECK || DNGL_EVENT_SUPPORT */
-
-	/* add new event here */
-} bcm_event_msg_u_t;
 
 #define BCM_MSG_LEN	(sizeof(bcm_event_t) - sizeof(bcmeth_hdr_t) - sizeof(struct ether_header))
 
@@ -253,9 +240,6 @@ typedef union bcm_event_msg_u {
 /* define an API for getting the string name of an event */
 extern const char *bcmevent_get_name(uint event_type);
 
-/* validate if the event is proper and if valid copy event header to event */
-extern int is_wlc_event_frame(void *pktdata, uint pktlen, uint16 exp_usr_subtype,
-	bcm_event_msg_u_t *out_event);
 
 
 /* Event status codes */

@@ -24,7 +24,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: wl_cfg80211.c 669376 2016-11-09 07:55:12Z $
+ * $Id: wl_cfg80211.c 675612 2016-12-16 10:35:47Z $
  */
 /* */
 #include <typedefs.h>
@@ -4743,7 +4743,7 @@ static bool wl_get_chan_isvht80(struct net_device *net, dhd_pub_t *dhd)
 		chanspec = wl_chspec_driver_to_host(chanspec);
 
 	isvht80 = chanspec & WL_CHANSPEC_BW_80;
-	WL_INFO(("%s: chanspec(%x:%d)\n", __FUNCTION__, chanspec, isvht80));
+	WL_INFORM(("%s: chanspec(%x:%d)\n", __FUNCTION__, chanspec, isvht80));
 
 	return isvht80;
 }
@@ -4847,9 +4847,9 @@ wl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 	maxrxpktglom = 0;
 #endif
 	bzero(&bssid, sizeof(bssid));
-	if (!wl_get_drv_status(cfg, CONNECTED, dev)&&
-		(ret = wldev_ioctl(dev, WLC_GET_BSSID, &bssid, ETHER_ADDR_LEN, false)) == 0) {
-		if (!ETHER_ISNULLADDR(&bssid)) {
+	if ((ret = wldev_ioctl(dev, WLC_GET_BSSID, &bssid, ETHER_ADDR_LEN, false)) == 0) {
+		if ((!wl_get_drv_status(cfg, CONNECTED, dev) && !ETHER_ISNULLADDR(&bssid)) ||
+				wl_get_drv_status(cfg, CONNECTED, dev)) {
 			scb_val_t scbval;
 			wl_set_drv_status(cfg, DISCONNECTING, dev);
 			scbval.val = DOT11_RC_DISASSOC_LEAVING;
@@ -4859,7 +4859,7 @@ wl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 			WL_DBG(("drv status CONNECTED is not set, but connected in FW!" MACDBG "/n",
 				MAC2STRDBG(bssid.octet)));
 			err = wldev_ioctl(dev, WLC_DISASSOC, &scbval,
-				sizeof(scb_val_t), true);
+					sizeof(scb_val_t), true);
 			if (unlikely(err)) {
 				wl_clr_drv_status(cfg, DISCONNECTING, dev);
 				WL_ERR(("error (%d)\n", err));
@@ -6805,7 +6805,7 @@ wl_cfg80211_config_p2p_pub_af_tx(struct wiphy *wiphy,
 	}
 	case P2P_PAF_PROVDIS_RSP: {
 		cfg->next_af_subtype = P2P_PAF_GON_REQ;
-		af_params->dwell_time = WL_MIN_DWELL_TIME;
+		af_params->dwell_time = WL_MED_DWELL_TIME;
 #ifdef WL_CFG80211_SYNC_GON
 		config_af_params->extra_listen = false;
 #endif /* WL_CFG80211_SYNC_GON */
@@ -11218,6 +11218,9 @@ wl_notify_connect_status(struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
 			wl_set_murx_block_eapol_status(cfg, FALSE);
 			/* Reset default murx_bfe_cap value */
 			wl_set_murx_bfe_cap(ndev, 1, FALSE);
+#if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
+			argos_config_mumimo_reset();
+#endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
 			DHD_ENABLE_RUNTIME_PM((dhd_pub_t *)(cfg->pub));
 #endif /* DYNAMIC_MUMIMO_CONTROL */
 #ifdef DHD_LOSSLESS_ROAMING
@@ -12168,7 +12171,7 @@ wl_bss_connect_done(struct bcm_cfg80211 *cfg, struct net_device *ndev,
 			memset(&cfg->last_roamed_addr, 0, ETHER_ADDR_LEN);
 		}
 
-		if (wl_cfg80211_verify_bss(cfg, ndev) != true) {
+		if (completed && (wl_cfg80211_verify_bss(cfg, ndev) != true)) {
 			/* If bss entry is not available in the cfg80211 bss cache
 			 * the wireless tack will complain and won't populate
 			 * wdev->current_bss ptr
@@ -13325,8 +13328,8 @@ static void wl_scan_timeout(unsigned long data)
 	struct wl_bss_info *bi = NULL;
 	s32 i;
 	u32 channel;
-#if defined(DHD_DEBUG) && defined(BCMPCIE) && defined(DHD_FW_COREDUMP)
 	dhd_pub_t *dhdp = (dhd_pub_t *)(cfg->pub);
+#if defined(DHD_DEBUG) && defined(BCMPCIE) && defined(DHD_FW_COREDUMP)
 	uint32 prev_memdump_mode = dhdp->memdump_enabled;
 #endif /* DHD_DEBUG && BCMPCIE */
 
@@ -13378,6 +13381,9 @@ static void wl_scan_timeout(unsigned long data)
 	if (!wl_scan_timeout_dbg_enabled)
 		wl_scan_timeout_dbg_set();
 #endif /* CUSTOMER_HW4_DEBUG */
+
+	dhdp->hang_reason = HANG_REASON_IOCTL_RESP_TIMEOUT;
+	net_os_send_hang_message(ndev);
 }
 
 #ifdef DHD_LOSSLESS_ROAMING

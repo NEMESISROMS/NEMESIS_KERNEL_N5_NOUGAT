@@ -18,7 +18,7 @@ DTB_PADDING=0
 
 if [ $MODEL = noblelte ]
 then
-	KERNEL_DEFCONFIG=exynos7420-noblelte_defconfig
+	KERNEL_DEFCONFIG=exynos7420-noblelte_nemesis_defconfig
 else if [ $MODEL = zeroflte ]
 then
 	KERNEL_DEFCONFIG=exynos7420-zeroflte_defconfig
@@ -53,7 +53,7 @@ FUNC_BUILD_DTIMAGE_TARGET()
 
 	case $MODEL in
 	noblelte)
-		DTSFILES="exynos7420-noblelte_eur_open_09"
+		DTSFILES="exynos7420-noblelte_usa_07"
 		;;
 	zeroflte)
 		DTSFILES=""

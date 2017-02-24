@@ -1,0 +1,94 @@
+
+==============================================
+START : FUNC_BUILD_KERNEL
+==============================================
+
+build common config=exynos7420-noblelte_nemesis_defconfig 
+build variant config=noblelte 
+rm files in : /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dts/*.dtb
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dts/*.dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dtb/*.dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-zImage': No such file or directory
+Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
+arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:335:warning: override: reassigning to symbol RKP_KDP
+arch/arm64/configs/exynos7420-noblelte_nemesis_defconfig:679:warning: override: reassigning to symbol MPTCP
+#
+# configuration written to .config
+#
+scripts/kconfig/conf --silentoldconfig Kconfig
+Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
+INFO: CC is /home/geiti94/android/toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-gcc
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CC      scripts/mod/devicetable-offsets.s
+  CALL    scripts/checksyscalls.sh
+  GEN     scripts/mod/devicetable-offsets.h
+  HOSTCC  scripts/mod/file2alias.o
+  HOSTLD  scripts/mod/modpost
+  CHK     include/generated/compile.h
+make[1]: Nothing to be done for 'dtbs'.
+  CC      drivers/video/exynos/decon/decon_core.o
+  LD      drivers/video/exynos/decon/dsim.o
+  LD      drivers/video/exynos/decon/decon.o
+  LD      drivers/video/exynos/decon/built-in.o
+  LD      drivers/video/exynos/built-in.o
+  LD      drivers/video/built-in.o
+  LD      drivers/built-in.o
+  LINK    vmlinux
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  KSYM    .tmp_kallsyms1.o
+  KSYM    .tmp_kallsyms2.o
+  LD      vmlinux
+  SORTEX  vmlinux
+  SYSMAP  System.map
+  FIPS : Generating hmac of fmp and updating vmlinux... 
+HMAC-SHA256(builtime_bytes.bin)= dd72b14720ffed2e4914d138bae980b99f3c67c0e189408afaf68afd38daa07a
+  FIPS : Generating hmac of crypto and updating vmlinux... 
+HMAC-SHA256(builtime_bytes.bin)= aa1cec150b14f2fdf8a4d823b1db368a0999623947b45a5b37ad95a9cee8b716
+  OBJCOPY arch/arm64/boot/Image
+  GZIP    arch/arm64/boot/Image.gz
+Processing dts files...
+=> Processing: exynos7420-noblelte_usa_07.dts
+=> Generating: exynos7420-noblelte_usa_07.dtb
+Warning (device_type_is_string): "device_type" property in /rgb is not a string
+Generating dtb.img...
+=> Found compatible entry: samsung,NOBLE LTE USA,rev04
+    (chip: 7420, hw_rev: 7, hw_rev_end: 7)
+Done.
+
+=================================
+END   : FUNC_BUILD_KERNEL
+=================================
+
+[3J[H[2J 
+Android Image Kitchen - RepackImg Script
+by osm0sis @ xda-developers
+ 
+Warning: Overwriting existing files!
+ 
+Packing ramdisk...
+ 
+Using compression: gzip
+ 
+Getting build information...
+kernel = boot.img-zImage
+cmdline = 
+board = SYSMAGIC000KU
+base = 10000000
+pagesize = 2048
+kernel_offset = 00008000
+ramdisk_offset = 01000000
+tags_offset = 00000100
+dtb = boot.img-dtb
+ 
+Building image...
+ 
+Done!
+Total compile time is 48 seconds

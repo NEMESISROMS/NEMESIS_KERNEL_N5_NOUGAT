@@ -27,7 +27,7 @@
  *
  * <<Broadcom-WL-IPTag/Open:>>
  *
- * $Id: dhd.h 668603 2016-11-04 04:11:58Z $
+ * $Id: dhd.h 674353 2016-12-08 04:07:44Z $
  */
 
 /****************
@@ -672,6 +672,9 @@ typedef struct dhd_pub {
 	uint8 murx_block_eapol;
 #endif /* DYNAMIC_MUMIMO_CONTROL */
 	bool wbtext_support;
+#ifdef WLTDLS
+	spinlock_t tdls_lock;
+#endif /* WLTDLS */
 } dhd_pub_t;
 
 #if defined(PCIE_FULL_DONGLE)
@@ -1664,6 +1667,10 @@ extern void dhd_os_general_spin_unlock(dhd_pub_t *pub, unsigned long flags);
 #define DHD_FLOWRING_LIST_LOCK(lock, flags)       (flags) = dhd_os_spin_lock(lock)
 #define DHD_FLOWRING_LIST_UNLOCK(lock, flags)     dhd_os_spin_unlock((lock), (flags))
 
+/* Enable DHD TDLS peer list spin lock/unlock */
+#define DHD_TDLS_LOCK(lock, flags)       (flags) = dhd_os_spin_lock(lock)
+#define DHD_TDLS_UNLOCK(lock, flags)     dhd_os_spin_unlock((lock), (flags))
+
 extern void dhd_dump_to_kernelog(dhd_pub_t *dhdp);
 
 
@@ -1843,5 +1850,17 @@ void dhd_pktid_audit_fail_cb(dhd_pub_t *dhdp);
 
 int dhd_check_eapol_4way_message(char *dump_data);
 void dhd_dump_eapol_4way_message(char *ifname, char *dump_data, bool direction);
+#ifdef DYNAMIC_MUMIMO_CONTROL
+#if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
+void argos_config_mumimo_reset(void);
+#endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
+#endif /* DYNAMIC_MUMIMO_CONTROL */
+
+#if defined(CONFIG_64BIT)
+#define DHD_SUPPORT_64BIT
+#elif defined(DHD_EFI)
+#define DHD_SUPPORT_64BIT
+/* by default disabled for other platforms, can enable appropriate macro to enable 64 bit support */
+#endif /* (linux || LINUX) && CONFIG_64BIT */
 
 #endif /* _dhd_h_ */

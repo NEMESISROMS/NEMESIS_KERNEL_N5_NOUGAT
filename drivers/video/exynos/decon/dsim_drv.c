@@ -189,6 +189,49 @@ int dsim_write_data(struct dsim_device *dsim, unsigned int data_id,
 {
 	int ret = 0;
 
+#ifdef CONFIG_FB_DSU
+	struct decon_device *decon = decon_int_drvdata;
+
+	if( decon!=NULL && decon->need_DSU_update ) {
+        char pBuffer[1024];
+        u8* pData;
+        int i;
+
+        sprintf( pBuffer, "%s(dsu): ", __func__ );
+        switch (data_id) {
+        /* short packet types of packet types for command. */
+        case MIPI_DSI_GENERIC_SHORT_WRITE_0_PARAM:
+        case MIPI_DSI_GENERIC_SHORT_WRITE_1_PARAM:
+        case MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM:
+        case MIPI_DSI_DCS_SHORT_WRITE:
+        case MIPI_DSI_DCS_SHORT_WRITE_PARAM:
+        case MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE:
+        case MIPI_DSI_GENERIC_READ_REQUEST_0_PARAM:
+        case MIPI_DSI_GENERIC_READ_REQUEST_1_PARAM:
+        case MIPI_DSI_GENERIC_READ_REQUEST_2_PARAM:
+        case MIPI_DSI_DCS_READ:
+        case MIPI_DSI_COLOR_MODE_OFF:
+        case MIPI_DSI_COLOR_MODE_ON:
+        case MIPI_DSI_SHUTDOWN_PERIPHERAL:
+        case MIPI_DSI_TURN_ON_PERIPHERAL:
+	        sprintf( pBuffer +strlen(pBuffer), "cmd:%02x, data=%02x %02x ", data_id, (unsigned int) data0, data1 );
+	        break;
+
+        /* long packet types of packet types for command. */
+        case MIPI_DSI_GENERIC_LONG_WRITE:
+        case MIPI_DSI_DCS_LONG_WRITE:
+	        pData = (u8 *)(data0);
+	        sprintf( pBuffer +strlen(pBuffer), "cmd:%02x, (%d)data=", data_id, decon->need_DSU_update );
+	        for( i = 0; i < data1; i++ )
+		        sprintf( pBuffer +strlen(pBuffer), "%02x ", pData[i] );
+	        break;
+        default:
+	        break;
+        }
+        pr_info( "%s\n", pBuffer );
+	}
+#endif
+
 	if (decon_int_drvdata) {
 		/* LPD related: Decon must be enabled for PACKET_GO mode */
 		decon_lpd_block_exit(decon_int_drvdata);
@@ -456,6 +499,16 @@ static void dsim_set_lcd_full_screen(struct dsim_device *dsim)
 static void dsim_set_lcd_full_screen(struct dsim_device *dsim)
 {
 	return;
+}
+#endif
+
+#ifdef CONFIG_FB_DSU
+static int dsim_dsu_command(struct dsim_device *dsim, struct decon_device *decon)
+{
+	pr_info( "%s : DSU_mode=%d, (%d,%d)\n", __func__, decon->DSU_mode, dsim->dsu_xres, dsim->dsu_yres );
+	call_panel_ops(dsim, dsu_cmd, dsim);
+
+	return 0;
 }
 #endif
 
@@ -1602,10 +1655,23 @@ static int dsim_s_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
+#ifdef CONFIG_FB_DSU
+void dsim_reg_set_num_of_slice(u32 id, u32 num_of_slice);
+void dsim_reg_set_multi_slice(u32 id, struct decon_lcd *lcd_info);
+void dsim_reg_set_size_of_slice(u32 id, struct decon_lcd *lcd_info);
+#endif
+
 static long dsim_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 {
 	struct dsim_device *dsim = sd_to_dsim(sd);
 	int ret = 0;
+
+#ifdef CONFIG_FB_DSU
+	static const unsigned char LCD_SEQ_TE_ON[] = {0x35,};
+	static const unsigned char LCD_SEQ_TE_OFF[] = { 0x34,};
+	static const unsigned char LCD_SEQ_DISPLAY_ON[] = { 0x29, };
+	static const unsigned char LCD_SEQ_DISPLAY_OFF[] = { 0x28 };
+#endif
 
 	switch (cmd) {
 	case DSIM_IOC_GET_LCD_INFO:
@@ -1645,10 +1711,40 @@ static long dsim_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	case DSIM_IOC_DUMP:
 		dsim_dump(dsim, 1);
 		break;
+#ifdef CONFIG_FB_DSU
+	case DSIM_IOC_DSU_CMD:
+		ret = dsim_dsu_command(dsim, (struct decon_device *) arg );
+	break;
+	case DSIM_IOC_TE_ONOFF:
+		if( (bool) arg ) { // TE_ON
+			pr_info( "%s (DSU) send LCD_SEQ_TE_ON(%d)\n", __func__,  (int)((unsigned long)arg) );
+			dsim_write_hl_data(dsim, LCD_SEQ_TE_ON, ARRAY_SIZE(LCD_SEQ_TE_ON));
+		} else {	// TE_OFF
+			msleep(1);	// this delay is requared by noise in LCD-bottom (HD->FHD)
+			pr_info( "%s (DSU) LCD_SEQ_TE_OFF(%d)\n", __func__, (int)((unsigned long)arg) );
+			dsim_write_hl_data(dsim, LCD_SEQ_TE_OFF, ARRAY_SIZE(LCD_SEQ_TE_OFF));
+		}
+	break;
+	case DSIM_IOC_DISPLAY_ONOFF:
+		if( (bool) arg ) { // TE_ON
+			pr_info( "%s (DSU) send LCD_SEQ_DISPLAY_ON(%d)\n", __func__, (int)((unsigned long)arg) );
+			dsim_write_hl_data(dsim, LCD_SEQ_DISPLAY_ON, ARRAY_SIZE(LCD_SEQ_DISPLAY_ON));
+		} else {	// TE_OFF
+			pr_info( "%s (DSU) LCD_SEQ_DISPLAY_OFF(%d)\n", __func__, (int)((unsigned long)arg) );
+			dsim_write_hl_data(dsim, LCD_SEQ_DISPLAY_OFF, ARRAY_SIZE(LCD_SEQ_DISPLAY_OFF));
+		}
+	break;
+
+	case DSIM_IOC_DSU_RECONFIG:
+		pr_info("%s: DSIM_IOC_DSU_RECONFIG ++\n", __func__ );
+		// src code from : dsim_reg_init()
+		ret = 0;
+	break;
+#endif	
 	default:
 		dev_err(dsim->dev, "unsupported ioctl");
 		ret = -EINVAL;
-		break;
+	break;
 	}
 
 	return ret;
@@ -2074,7 +2170,6 @@ static int dsim_remove(struct platform_device *pdev)
 	pm_runtime_disable(dev);
 	dsim_put_clocks(dsim);
 	mutex_destroy(&dsim_rd_wr_mutex);
-	kfree(dsim);
 	dev_info(dev, "mipi-dsi driver removed\n");
 
 	return 0;
@@ -2166,6 +2261,7 @@ static struct platform_driver dsim_driver __refdata = {
 		.owner		= THIS_MODULE,
 		.pm		= &dsim_pm_ops,
 		.of_match_table	= of_match_ptr(dsim_match),
+		.suppress_bind_attrs = true,
 	}
 };
 
