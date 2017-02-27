@@ -53,7 +53,7 @@ FUNC_BUILD_DTIMAGE_TARGET()
 
 	case $MODEL in
 	noblelte)
-		DTSFILES="exynos7420-noblelte_usa_07"
+		DTSFILES="exynos7420-noblelte_usa_09"
 		;;
 	zeroflte)
 		DTSFILES=""

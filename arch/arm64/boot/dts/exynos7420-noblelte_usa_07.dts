@@ -11,8 +11,8 @@
 
 /dts-v1/;
 #include "exynos7420-noble_common.dtsi"
-#include "exynos7420-noblelte_eur_battery_09.dtsi"
-#include "exynos7420-noblelte_gpio_usa_09.dtsi"
+#include "exynos7420-noblelte_eur_battery_04.dtsi"
+#include "exynos7420-noblelte_gpio_usa_04.dtsi"
 #include "exynos7420-noblelte_modem-shannon.dtsi"
 #include "exynos7420-noblelte_fingerprint-sensor_04.dtsi"
 #include "exynos7420-noblelte_motor.dtsi"
