@@ -1,7 +1,7 @@
 /*
  * Linux cfg80211 Vendor Extension Code
  *
- * Copyright (C) 1999-2016, Broadcom Corporation
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -93,11 +93,7 @@ wl_cfgvendor_send_async_event(struct wiphy *wiphy,
 	kflags = in_atomic() ? GFP_ATOMIC : GFP_KERNEL;
 
 	/* Alloc the SKB for vendor_event */
-#if defined(CONFIG_ARCH_MSM) && defined(SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC)
-	skb = cfg80211_vendor_event_alloc(wiphy, NULL, len, event_id, kflags);
-#else
 	skb = cfg80211_vendor_event_alloc(wiphy, len, event_id, kflags);
-#endif /* CONFIG_ARCH_MSM && SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC */
 	if (!skb) {
 		WL_ERR(("skb alloc failed"));
 		return -ENOMEM;
@@ -153,11 +149,7 @@ wl_cfgvendor_rtt_evt(void *ctx, void *rtt_data)
 	rtt_list = (struct list_head *)rtt_data;
 	kflags = in_atomic() ? GFP_ATOMIC : GFP_KERNEL;
 	/* Alloc the SKB for vendor_event */
-#if defined(CONFIG_ARCH_MSM) && defined(SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC)
-	skb = cfg80211_vendor_event_alloc(wiphy, NULL, tot_len, GOOGLE_RTT_COMPLETE_EVENT, kflags);
-#else
 	skb = cfg80211_vendor_event_alloc(wiphy, tot_len, GOOGLE_RTT_COMPLETE_EVENT, kflags);
-#endif /* CONFIG_ARCH_MSM && SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC */
 	if (!skb) {
 		WL_ERR(("skb alloc failed"));
 		goto exit;
@@ -505,11 +497,7 @@ wl_cfgvendor_send_hotlist_event(struct wiphy *wiphy,
 		kflags = in_atomic() ? GFP_ATOMIC : GFP_KERNEL;
 
 		/* Alloc the SKB for vendor_event */
-#if defined(CONFIG_ARCH_MSM) && defined(SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC)
-		skb = cfg80211_vendor_event_alloc(wiphy, NULL, malloc_len, event, kflags);
-#else
 		skb = cfg80211_vendor_event_alloc(wiphy, malloc_len, event, kflags);
-#endif /* CONFIG_ARCH_MSM && SUPPORT_WDEV_CFG80211_VENDOR_EVENT_ALLOC */
 		if (!skb) {
 			WL_ERR(("skb alloc failed"));
 			return -ENOMEM;

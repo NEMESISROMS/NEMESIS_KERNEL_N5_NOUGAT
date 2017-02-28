@@ -1,7 +1,7 @@
 /*
  * Linux DHD Bus Module for PCIE
  *
- * Copyright (C) 1999-2016, Broadcom Corporation
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_pcie.h 632804 2016-04-20 13:43:44Z $
+ * $Id: dhd_pcie.h 607278 2015-12-18 11:05:38Z $
  */
 
 
@@ -32,19 +32,12 @@
 #include <hnd_cons.h>
 #ifdef SUPPORT_LINKDOWN_RECOVERY
 #ifdef CONFIG_ARCH_MSM
-#ifdef CONFIG_PCI_MSM
+#ifdef CONFIG_ARCH_MSM8994
 #include <linux/msm_pcie.h>
 #else
 #include <mach/msm_pcie.h>
-#endif /* CONFIG_PCI_MSM */
+#endif /* CONFIG_ARCH_MSM8994 */
 #endif /* CONFIG_ARCH_MSM */
-#ifdef EXYNOS_PCIE_LINKDOWN_RECOVERY
-#ifdef CONFIG_SOC_EXYNOS8890
-#include <linux/exynos-pci-noti.h>
-extern int exynos_pcie_register_event(struct exynos_pcie_register_event *reg);
-extern int exynos_pcie_deregister_event(struct exynos_pcie_register_event *reg);
-#endif /* CONFIG_SOC_EXYNOS8890 */
-#endif /* EXYNOS_PCIE_LINKDOWN_RECOVERY */
 #endif /* SUPPORT_LINKDOWN_RECOVERY */
 #ifdef DHD_USE_IDLECOUNT
 #include <linux/mutex.h>
@@ -72,18 +65,6 @@ extern int exynos_pcie_deregister_event(struct exynos_pcie_register_event *reg);
 #define	REMAP_ENAB(bus)			((bus)->remap)
 #define	REMAP_ISADDR(bus, a)		(((a) >= ((bus)->orig_ramsize)) && ((a) < ((bus)->ramsize)))
 
-#ifdef SUPPORT_LINKDOWN_RECOVERY
-#ifdef CONFIG_ARCH_MSM
-#define struct_pcie_notify		struct msm_pcie_notify
-#define struct_pcie_register_event	struct msm_pcie_register_event
-#endif /* CONFIG_ARCH_MSM */
-#ifdef EXYNOS_PCIE_LINKDOWN_RECOVERY
-#ifdef CONFIG_SOC_EXYNOS8890
-#define struct_pcie_notify		struct exynos_pcie_notify
-#define struct_pcie_register_event	struct exynos_pcie_register_event
-#endif /* CONFIG_SOC_EXYNOS8890 */
-#endif /* EXYNOS_PCIE_LINKDOWN_RECOVERY */
-#endif /* SUPPORT_LINKDOWN_RECOVERY */
 #define MAX_DHD_TX_FLOWS	256
 
 /* user defined data structures */
@@ -218,7 +199,6 @@ typedef struct dhd_bus {
 	uint32 d0_inform_in_use_cnt;
 	uint8 force_suspend;
 	uint32 d3_ack_war_cnt;
-	bool irq_registered;
 } dhd_bus_t;
 
 /* function declarations */
@@ -255,25 +235,19 @@ extern void dhdpcie_oob_intr_set(dhd_bus_t *bus, bool enable);
 #endif /* BCMPCIE_OOB_HOST_WAKE */
 
 #ifdef USE_EXYNOS_PCIE_RC_PMPATCH
-#if defined(CONFIG_MACH_UNIVERSAL5433)
-#define SAMSUNG_PCIE_DEVICE_ID 0xa5e3
-#define SAMSUNG_PCIE_CH_NUM
-#elif defined(CONFIG_MACH_UNIVERSAL7420)
-#define SAMSUNG_PCIE_DEVICE_ID 0xa575
-#define SAMSUNG_PCIE_CH_NUM 1
-#elif defined(CONFIG_SOC_EXYNOS8890)
-#define SAMSUNG_PCIE_DEVICE_ID 0xa544
-#define SAMSUNG_PCIE_CH_NUM 0
-#else
-#error "Not supported platform"
-#endif
-#ifdef CONFIG_MACH_UNIVERSAL5433
-extern int exynos_pcie_pm_suspend(void);
-extern int exynos_pcie_pm_resume(void);
-#else
+#if defined(CONFIG_MACH_UNIVERSAL7420)
+#define EXYNOS_PCIE_CH_NUM	1
+#define EXYNOS_PCIE_DEVICE_ID	0xa575
 extern int exynos_pcie_pm_suspend(int ch_num);
 extern int exynos_pcie_pm_resume(int ch_num);
-#endif /* CONFIG_MACH_UNIVERSAL5433 */
+#elif defined(CONFIG_MACH_UNIVERSAL5433)
+#define	EXYNOS_PCIE_CH_NUM
+#define EXYNOS_PCIE_DEVICE_ID	0xa5e3
+extern void exynos_pcie_pm_suspend(void);
+extern void exynos_pcie_pm_resume(void);
+#else
+#error "Not supported platform"
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 #endif /* USE_EXYNOS_PCIE_RC_PMPATCH */
 
 extern int dhd_buzzz_dump_dngl(dhd_bus_t *bus);

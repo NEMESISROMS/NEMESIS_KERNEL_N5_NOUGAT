@@ -1,7 +1,7 @@
 /*
  * Platform Dependent file for Samsung Exynos
  *
- * Copyright (C) 1999-2016, Broadcom Corporation
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -47,14 +47,14 @@
 #include <linux/wlan_plat.h>
 
 #if defined(CONFIG_64BIT)
-#include <asm-generic/gpio.h>
+#include <asm/gpio.h>
 #else
 #include <mach/gpio.h>
 #endif /* CONFIG_64BIT */
-//#include <mach/irqs.h>
+#include <mach/irqs.h>
 #include <linux/sec_sysfs.h>
 
-//#include <plat/gpio-cfg.h>
+#include <plat/gpio-cfg.h>
 
 #ifdef CONFIG_BROADCOM_WIFI_RESERVED_MEM
 extern int dhd_init_wlan_mem(void);
@@ -67,26 +67,15 @@ static int wlan_pwr_on = -1;
 int wlan_host_wake_irq = 0;
 EXPORT_SYMBOL(wlan_host_wake_irq);
 
-#ifdef CONFIG_BCMDHD_PCIE
-#define EXYNOS_PCIE_RC_ONOFF
-#endif /* CONFIG_BCMDHD_PCIE */
-
-#ifdef EXYNOS_PCIE_RC_ONOFF
-#ifdef CONFIG_MACH_UNIVERSAL5433
-#define SAMSUNG_PCIE_CH_NUM
-#elif defined(CONFIG_MACH_UNIVERSAL7420)
-#define SAMSUNG_PCIE_CH_NUM 1
-#elif defined(CONFIG_SOC_EXYNOS8890)
-#define SAMSUNG_PCIE_CH_NUM 0
-#endif
-#ifdef CONFIG_MACH_UNIVERSAL5433
+#if defined(CONFIG_MACH_UNIVERSAL5433)
 extern void exynos_pcie_poweron(void);
 extern void exynos_pcie_poweroff(void);
-#else
+extern int check_rev(void);
+#endif /* CONFIG_MACH_UINVERSAL5433 */
+#if defined(CONFIG_MACH_UNIVERSAL7420)
 extern void exynos_pcie_poweron(int);
 extern void exynos_pcie_poweroff(int);
-#endif /* CONFIG_MACH_UNIVERSAL5433 */
-#endif /* EXYNOS_PCIE_RC_ONOFF */
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 
 #if defined(CONFIG_ARGOS)
 extern int argos_irq_affinity_setup_label(unsigned int irq, const char *label,
@@ -101,56 +90,50 @@ extern void mmc_ctrl_power(struct mmc_host *host, bool onoff);
 static int
 dhd_wlan_power(int onoff)
 {
-#ifdef CONFIG_MACH_A7LTE
-	struct pinctrl *pinctrl = NULL;
-#endif /* CONFIG_MACH_A7LTE */
-
 	printk(KERN_INFO"------------------------------------------------");
 	printk(KERN_INFO"------------------------------------------------\n");
 	printk(KERN_INFO"%s Enter: power %s\n", __FUNCTION__, onoff ? "on" : "off");
 
-#ifdef EXYNOS_PCIE_RC_ONOFF
+#if defined(CONFIG_MACH_UNIVERSAL5433) || defined(CONFIG_MACH_UNIVERSAL7420)
 	if (!onoff) {
-		exynos_pcie_poweroff(SAMSUNG_PCIE_CH_NUM);
+#if defined(CONFIG_MACH_UNIVERSAL7420)
+		exynos_pcie_poweroff(1);
+#else
+		exynos_pcie_poweroff();
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 	}
 
-	if (gpio_direction_output(wlan_pwr_on, onoff)) {
-		printk(KERN_ERR "%s failed to control WLAN_REG_ON to %s\n",
-			__FUNCTION__, onoff ? "HIGH" : "LOW");
-		return -EIO;
+#if defined(CONFIG_MACH_UNIVERSAL5433)
+	/* Old revision chip can't control WL_REG_ON */
+	if (check_rev()) {
+#endif /* CONFIG_MACH_UINVERSAL5433 */
+		if (gpio_direction_output(wlan_pwr_on, onoff)) {
+			printk(KERN_ERR "%s failed to control WLAN_REG_ON to %s\n",
+				__FUNCTION__, onoff ? "HIGH" : "LOW");
+			return -EIO;
+		}
+#if defined(CONFIG_MACH_UNIVERSAL5433)
 	}
+#endif /* CONFIG_MACH_UINVERSAL5433 */
 
 	if (onoff) {
-		exynos_pcie_poweron(SAMSUNG_PCIE_CH_NUM);
+#if defined(CONFIG_MACH_UNIVERSAL7420)
+		exynos_pcie_poweron(1);
+#else
+		exynos_pcie_poweron();
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 	}
 #else
-#ifdef CONFIG_MACH_A7LTE
-	if (onoff) {
-		pinctrl = devm_pinctrl_get_select(mmc_dev_for_wlan, "sdio_wifi_on");
-		if (IS_ERR(pinctrl))
-			printk(KERN_INFO "%s WLAN SDIO GPIO control error\n", __FUNCTION__);
-		msleep(PINCTL_DELAY);
-	}
-#endif /* CONFIG_MACH_A7LTE */
-
 	if (gpio_direction_output(wlan_pwr_on, onoff)) {
 		printk(KERN_ERR "%s failed to control WLAN_REG_ON to %s\n",
 			__FUNCTION__, onoff ? "HIGH" : "LOW");
 		return -EIO;
 	}
-
-#ifdef CONFIG_MACH_A7LTE
-	if (!onoff) {
-		pinctrl = devm_pinctrl_get_select(mmc_dev_for_wlan, "sdio_wifi_off");
-		if (IS_ERR(pinctrl))
-			printk(KERN_INFO "%s WLAN SDIO GPIO control error\n", __FUNCTION__);
-	}
-#endif /* CONFIG_MACH_A7LTE */
+#endif /* CONFIG_MACH_UNIVERSAL5433 || CONFIG_MACH_UNIVERSAL7420 */
 #ifdef CONFIG_MACH_UNIVERSAL3475
 	if (wlan_mmc)
 		mmc_ctrl_power(wlan_mmc, onoff);
 #endif /* CONFIG_MACH_UNIVERSAL3475 */
-#endif /* EXYNOS_PCIE_RC_ONOFF */
 	return 0;
 }
 
@@ -215,12 +198,9 @@ dhd_wlan_init_gpio(void)
 	gpio_export(wlan_pwr_on, 1);
 	gpio_export_link(wlan_dev, "WLAN_REG_ON", wlan_pwr_on);
 	msleep(WIFI_TURNON_DELAY);
-
-#ifdef EXYNOS_PCIE_RC_ONOFF
-	printk( " exynos_pcie_poweron\n" );
-        exynos_pcie_poweron(SAMSUNG_PCIE_CH_NUM);
-#endif /* EXYNOS_PCIE_RC_ONOFF */
-
+#if defined(CONFIG_MACH_UNIVERSAL7420)
+	exynos_pcie_poweron(1);
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 
 	/* ========== WLAN_HOST_WAKE ============ */
 	wlan_host_wake_up = of_get_gpio(root_node, 1);
@@ -244,11 +224,11 @@ dhd_wlan_init_gpio(void)
 
 #if defined(CONFIG_ARGOS)
 #if defined(CONFIG_BCMDHD_PCIE)
-#if defined(CONFIG_MACH_UNIVERSAL7420) || defined(CONFIG_SOC_EXYNOS8890)
+#if defined(CONFIG_MACH_UNIVERSAL7420)
 #define ARGOS_IRQ_NUMBER 237
 #else
 #define ARGOS_IRQ_NUMBER 277
-#endif /* CONFIG_MACH_UNIVERSAL7420 || CONFIG_SOC_EXYNOS8890 */
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 #endif /* CONFIG_BCMDHD_PCIE */
 
 void
@@ -344,7 +324,7 @@ fail:
 	return ret;
 }
 
-#if defined(CONFIG_MACH_UNIVERSAL7420) || defined(CONFIG_SOC_EXYNOS8890)
+#if defined(CONFIG_MACH_UNIVERSAL7420)
 #if defined(CONFIG_DEFERRED_INITCALLS)
 deferred_module_init(dhd_wlan_init);
 #else

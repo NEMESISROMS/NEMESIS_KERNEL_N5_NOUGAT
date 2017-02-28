@@ -468,6 +468,43 @@ enum {
 	ACL_OPR_MAX
 };
 
+#if defined(CONFIG_FB_DSU)
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_WQHD_00[] = {
+	0xBA,
+	0x01
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_00[] = {
+	0xBA,
+	0x00
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_01[] = {
+	0x2A,
+	0x00, 0x00, 0x04, 0x37,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_FHD_02[] = {
+	0x2B,
+	0x00, 0x00, 0x07, 0x7F,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_00[] = {
+	0xBA,
+	0x01
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_01[] = { /* HA2 not support HD */
+	0x2A,
+	0x00, 0x00, 0x02, 0xCF,
+};
+
+static const unsigned char S6E3HA2_SEQ_DDI_SCALER_HD_02[] = {
+	0x2B,
+	0x00, 0x00, 0x04, 0xFF,
+};
+#endif
+
 #ifdef CONFIG_LCD_HMT
 #define DEFAULT_HMT_BRIGHTNESS			162
 #define	HMT_OFF							0

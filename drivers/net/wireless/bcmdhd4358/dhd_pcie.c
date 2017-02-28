@@ -1,7 +1,7 @@
 /*
  * DHD Bus Module for PCIE
  *
- * Copyright (C) 1999-2016, Broadcom Corporation
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
  *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_pcie.c 633981 2016-04-26 09:33:48Z $
+ * $Id: dhd_pcie.c 607285 2015-12-18 11:18:53Z $
  */
 
 
@@ -296,7 +296,6 @@ dhd_bus_t* dhdpcie_bus_attach(osl_t *osh, volatile char* regs, volatile char* tc
 		bus->dhd->busstate = DHD_BUS_DOWN;
 		bus->db1_for_mb = TRUE;
 		bus->dhd->hang_report  = TRUE;
-		bus->irq_registered = FALSE;
 
 		bus->d3_ack_war_cnt = 0;
 
@@ -641,9 +640,8 @@ dhdpcie_bus_remove_prep(dhd_bus_t *bus)
 
 	bus->dhd->busstate = DHD_BUS_DOWN;
 	dhdpcie_bus_intr_disable(bus);
-	if (!bus->dhd->dongle_isolation) {
-		pcie_watchdog_reset(bus->osh, bus->sih, (sbpcieregs_t *)(bus->regs));
-	}
+	pcie_watchdog_reset(bus->osh, bus->sih, (sbpcieregs_t *)(bus->regs));
+
 	dhd_os_sdunlock(bus->dhd);
 
 	DHD_TRACE(("%s Exit\n", __FUNCTION__));
@@ -1430,7 +1428,6 @@ int dhd_bus_rxctl(struct dhd_bus *bus, uchar *msg, uint msglen)
 		DHD_CTL(("%s: resumed on rxctl frame, got %d\n", __FUNCTION__, rxlen));
 	} else if (timeleft == 0) {
 		DHD_ERROR(("%s: resumed on timeout\n", __FUNCTION__));
-		dhd_prot_debug_info_print(bus->dhd);
 #if defined(DHD_DEBUG) && defined(CUSTOMER_HW4)
 		if (bus->dhd->memdump_enabled) {
 			/* write core dump to file */
@@ -1749,7 +1746,6 @@ done:
 static int
 dhdpcie_mem_dump(dhd_bus_t *bus)
 {
-#if 0
 	int ret = 0;
 	int size; /* Full mem size */
 	int start = bus->dongle_ram_base; /* Start address */
@@ -1809,9 +1805,6 @@ dhdpcie_mem_dump(dhd_bus_t *bus)
 
 	/* buf free handled in write_to_file, not here */
 	return ret;
-#else
-	return 0;
-#endif
 }
 
 int
@@ -1894,16 +1887,6 @@ dhdpcie_bus_membytes(dhd_bus_t *bus, bool write, ulong address, uint8 *data, uin
 	return bcmerror;
 }
 
-// dummy function
-#if 1
-int
-dhd_dongle_mem_dump()
-{
-	return 0;
-}
-EXPORT_SYMBOL(dhd_dongle_mem_dump);
-#endif
-
 int BCMFASTPATH
 dhd_bus_schedule_queue(struct dhd_bus  *bus, uint16 flow_id, bool txs)
 {
@@ -1944,10 +1927,6 @@ dhd_bus_schedule_queue(struct dhd_bus  *bus, uint16 flow_id, bool txs)
 		unsigned long flags;
 		void *txp = NULL;
 		flow_queue_t *queue;
-#ifdef DHD_LOSSLESS_ROAMING
-		struct ether_header *eh;
-		uint8 *pktdata;
-#endif /* DHD_LOSSLESS_ROAMING */
 
 		queue = &flow_ring_node->queue; /* queue associated with flow ring */
 
@@ -1970,17 +1949,6 @@ dhd_bus_schedule_queue(struct dhd_bus  *bus, uint16 flow_id, bool txs)
 			}
 		}
 #endif /* DHDTCPACK_SUPPRESS */
-#ifdef DHD_LOSSLESS_ROAMING
-			pktdata = (uint8 *)PKTDATA(OSH_NULL, txp);
-			eh = (struct ether_header *) pktdata;
-			if (eh->ether_type == hton16(ETHER_TYPE_802_1X)) {
-				uint8 prio = (uint8)PKTPRIO(txp);
-				/* Restore to original priority for 802.1X packet */
-				if (prio == PRIO_8021D_NC) {
-					PKTSETPRIO(txp, dhdp->prio_8021x);
-				}
-			}
-#endif /* DHD_LOSSLESS_ROAMING */
 			/* Attempt to transfer packet over flow ring */
 
 			ret = dhd_prot_txdata(bus->dhd, txp, flow_ring_node->flow_info.ifindex);
@@ -3495,29 +3463,6 @@ dhdpcie_bus_suspend(struct dhd_bus *bus, bool state)
 		dhd_os_set_ioctl_resp_timeout(IOCTL_RESP_TIMEOUT);
 		DHD_OS_WAKE_LOCK_RESTORE(bus->dhd);
 
-		{
-			uint32 d2h_mb_data = 0;
-			uint32 zero = 0;
-
-			/* If wait_for_d3_ack was not updated because D2H MB was not received */
-			if (bus->wait_for_d3_ack == 0) {
-				/* Read the Mb data to see if the Dongle has actually sent D3 ACK */
-				dhd_bus_cmn_readshared(bus, &d2h_mb_data, DTOH_MB_DATA, 0);
-
-				if (!D2H_DEV_MB_INVALIDATED(d2h_mb_data) &&
-					(d2h_mb_data & D2H_DEV_D3_ACK)) {
-					DHD_ERROR(("*** D3 WAR for missing interrupt ***\r\n"));
-					/* Clear the MB Data */
-					dhd_bus_cmn_writeshared(bus, &zero, sizeof(uint32),
-						DTOH_MB_DATA, 0);
-
-					/* Consider that D3 ACK is received */
-					bus->wait_for_d3_ack = 1;
-					bus->d3_ack_war_cnt++;
-				} /* d2h_mb_data & D2H_DEV_D3_ACK */
-			} /* bus->wait_for_d3_ack was 0 */
-		}
-
 		/* To allow threads that got pre-empted to complete.
 		*/
 		while ((active = dhd_os_check_wakelock_all(bus->dhd)) &&
@@ -3577,7 +3522,6 @@ dhdpcie_bus_suspend(struct dhd_bus *bus, bool state)
 			bus->dhd->d3ackcnt_timeout++;
 			DHD_ERROR(("%s: resumed on timeout for D3 ACK d3_inform_cnt %d \n",
 				__FUNCTION__, bus->dhd->d3ackcnt_timeout));
-			dhd_prot_debug_info_print(bus->dhd);
 #if defined(DHD_DEBUG) && defined(CUSTOMER_HW4)
 			if (bus->dhd->memdump_enabled) {
 				/* write core dump to file */
@@ -4036,60 +3980,23 @@ dhdpcie_pme_active(osl_t *osh, bool enable)
 }
 #endif /* BCMPCIE_OOB_HOST_WAKE */
 
-void
-dhd_dump_intr_registers(dhd_pub_t *dhd, struct bcmstrbuf *strbuf)
-{
-	uint32 intstatus = 0;
-	uint32 intmask = 0;
-	uint32 mbintstatus = 0;
-	uint32 d2h_mb_data = 0;
-
-	intstatus = si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, PCIMailBoxInt, 0, 0);
-	intmask = si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, PCIMailBoxMask, 0, 0);
-	mbintstatus = si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, PCID2H_MailBox, 0, 0);
-	dhd_bus_cmn_readshared(dhd->bus, &d2h_mb_data, DTOH_MB_DATA, 0);
-
-	bcm_bprintf(strbuf, "intstatus=0x%x intmask=0x%x mbintstatus=0x%x\n",
-		intstatus, intmask, mbintstatus);
-	bcm_bprintf(strbuf, "d2h_mb_data=0x%x def_intmask=0x%x\n",
-		d2h_mb_data, dhd->bus->def_intmask);
-}
-
 /* Add bus dump output to a buffer */
-void
-dhd_bus_dump(dhd_pub_t *dhdp, struct bcmstrbuf *strbuf)
+void dhd_bus_dump(dhd_pub_t *dhdp, struct bcmstrbuf *strbuf)
 {
 	uint16 flowid;
-	int ix = 0;
 	flow_ring_node_t *flow_ring_node;
-	flow_info_t *flow_info;
-	char eabuf[ETHER_ADDR_STR_LEN];
-
-	if (dhdp->busstate != DHD_BUS_DATA) {
-		return;
-	}
 
 #ifdef DHD_USE_IDLECOUNT
 	bus_wake(dhdp->bus);
 #endif /* DHD_USE_IDLECOUNT */
 	dhd_prot_print_info(dhdp, strbuf);
-	dhd_dump_intr_registers(dhdp, strbuf);
-	bcm_bprintf(strbuf, "h2d_mb_data_ptr_addr 0x%x, d2h_mb_data_ptr_addr 0x%x\n",
-		dhdp->bus->h2d_mb_data_ptr_addr, dhdp->bus->d2h_mb_data_ptr_addr);
-	bcm_bprintf(strbuf,
-		"%s %4s %2s %4s %17s %4s %5s %17s %17s %7s\n",
-		"Num:", "Flow", "If", "Prio", ":Dest_MacAddress:", "RD", "WR",
-		"BASE(VA)", "BASE(PA)", "SIZE");
 	for (flowid = 0; flowid < dhdp->num_flow_rings; flowid++) {
 		flow_ring_node = DHD_FLOW_RING(dhdp, flowid);
 		if (flow_ring_node->active) {
-			flow_info = &flow_ring_node->flow_info;
-			bcm_bprintf(strbuf,
-				"%3d. %4d %2d %4d %17s", ix++,
-				flow_ring_node->flowid, flow_info->ifindex, flow_info->tid,
-				bcm_ether_ntoa((struct ether_addr *)&flow_info->da, eabuf));
-			dhd_prot_print_flow_ring(dhdp, flow_ring_node->prot_info, strbuf,
-				"%5d %5d %17p %8x:%8x %7d\n");
+			bcm_bprintf(strbuf, "Flow:%d IF %d Prio %d  Qlen %d ",
+				flow_ring_node->flowid, flow_ring_node->flow_info.ifindex,
+				flow_ring_node->flow_info.tid, flow_ring_node->queue.len);
+			dhd_prot_print_flow_ring(dhdp, flow_ring_node->prot_info, strbuf);
 		}
 	}
 	bcm_bprintf(strbuf, "D3 inform cnt %d\n", dhdp->bus->d3_inform_cnt);

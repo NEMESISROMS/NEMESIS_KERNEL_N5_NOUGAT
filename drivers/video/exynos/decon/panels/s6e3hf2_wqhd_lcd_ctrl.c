@@ -26,6 +26,9 @@ unsigned int s6e3hf2_lcd_type = S6E3HF2_LCDTYPE_WQHD;
 #include "s6e3hf2_wqhd_aid_dimming.h"
 #endif
 
+#if defined(CONFIG_LCD_RES) && defined(CONFIG_FB_DSU)
+#error cannot use both of CONFIG_LCD_RES and CONFIG_FB_DSU
+#endif
 
 #ifdef CONFIG_PANEL_AID_DIMMING
 static const unsigned char *HBM_TABLE[HBM_STATUS_MAX] = {SEQ_HBM_OFF, SEQ_HBM_ON};
@@ -1340,6 +1343,53 @@ displayon_err:
 
 }
 
+#if defined(CONFIG_FB_DSU)
+static int _s6e3hf2_wqhd_dsu_command(struct dsim_device *dsim, int xres, int yres)
+{
+	int ret = 0;
+
+	switch( xres ) {
+	case 1080:
+		ret = dsim_write_hl_data(dsim, S6E3HF2_SEQ_DDI_SCALER_FHD_00, ARRAY_SIZE(S6E3HF2_SEQ_DDI_SCALER_FHD_00));
+		if (ret < 0) {
+			dsim_err("%s : fail to write CMD : S6E3HF2_SEQ_DDI_SCALER_FHD_00\n", __func__);
+		}
+	break;
+	case 1440:
+		ret = dsim_write_hl_data(dsim, S6E3HF2_SEQ_DDI_SCALER_WQHD_00, ARRAY_SIZE(S6E3HF2_SEQ_DDI_SCALER_WQHD_00));
+		if (ret < 0) {
+			dsim_err("%s : fail to write CMD : S6E3HF2_SEQ_DDI_SCALER_WQHD_00\n", __func__);
+		}
+	break;
+	default:
+		dsim_err("%s : xres=%d, yres=%d, Unknown\n", __func__, xres, yres );
+	break;
+	}
+
+	dsim_info("%s : xres=%d, yres=%d\n", __func__, xres, yres );
+	return ret;
+}
+
+static int s6e3hf2_wqhd_dsu_command(struct dsim_device *dsim)
+{
+	int ret = 0;
+
+	ret = dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
+	if (ret < 0) {
+		dsim_err("%s : fail to write CMD : SEQ_TEST_KEY_ON_F0\n", __func__);
+	}
+
+	ret = _s6e3hf2_wqhd_dsu_command( dsim, dsim->dsu_xres, dsim->dsu_yres );
+
+	ret = dsim_write_hl_data(dsim, SEQ_TEST_KEY_OFF_FC, ARRAY_SIZE(SEQ_TEST_KEY_OFF_FC));
+	if (ret < 0) {
+		dsim_err("%s : fail to write CMD : SEQ_TEST_KEY_ON_FC\n", __func__);
+	}
+
+	dsim_info("%s : xres=%d, yres=%d\n", __func__, dsim->dsu_xres, dsim->dsu_yres);
+	return ret;
+}
+#endif
 
 static int s6e3hf2_wqhd_exit(struct dsim_device *dsim)
 {
@@ -1438,6 +1488,10 @@ static int s6e3hf2_wqhd_init(struct dsim_device *dsim)
 		}
 	} while( s6e3hf2_read_reg_status(dsim, false ) && cnt++ <3 );
 	// if( cnt >= 3 ) panic( "s6e3hf2_read_reg_status()" );
+
+#ifdef CONFIG_FB_DSU
+	ret = _s6e3hf2_wqhd_dsu_command( dsim, dsim->dsu_xres, dsim->dsu_yres );
+#endif
 
 #ifdef CONFIG_LCD_HMT
 	if(dsim->priv.hmt_on != HMT_ON)
@@ -1575,6 +1629,9 @@ struct dsim_panel_ops s6e3hf2_panel_ops = {
 	.exit		= s6e3hf2_wqhd_exit,
 	.init		= s6e3hf2_wqhd_init,
 	.dump 		= s6e3hf2_wqhd_dump,
+#ifdef CONFIG_FB_DSU
+	.dsu_cmd = s6e3hf2_wqhd_dsu_command,
+#endif
 };
 
 struct dsim_panel_ops *dsim_panel_get_priv_ops(struct dsim_device *dsim)

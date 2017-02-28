@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_linux.c 633120 2016-04-21 13:26:05Z $
+ * $Id: dhd_linux.c 610555 2016-01-07 07:41:14Z $
  */
 
 #include <typedefs.h>
@@ -567,11 +567,7 @@ module_param(dhd_arp_enable, uint, 0);
 
 /* ARP offload agent mode : Enable ARP Host Auto-Reply and ARP Peer Auto-Reply */
 
-#ifdef ENABLE_ARP_SNOOP_MODE
-uint dhd_arp_mode = ARP_OL_AGENT | ARP_OL_PEER_AUTO_REPLY | ARP_OL_SNOOP;
-#else
 uint dhd_arp_mode = ARP_OL_AGENT | ARP_OL_PEER_AUTO_REPLY;
-#endif	/* ENABLE_ARP_SNOOP_MODE */
 
 module_param(dhd_arp_mode, uint, 0);
 #endif /* ARP_OFFLOAD_SUPPORT */
@@ -735,7 +731,9 @@ module_param(dhd_use_idsup, uint, 0);
 #endif /* BCMSUP_4WAY_HANDSHAKE */
 
 extern char dhd_version[];
+#ifdef DHD_LOG_DUMP
 extern char fw_version[];
+#endif /* DHD_LOG_DUMP */
 
 int dhd_net_bus_devreset(struct net_device *dev, uint8 flag);
 static void dhd_net_if_lock_local(dhd_info_t *dhd);
@@ -2433,12 +2431,6 @@ dhd_sendpkt(dhd_pub_t *dhdp, int ifidx, void *pktbuf)
 		if (ETHER_ISMULTI(eh->ether_dhost))
 			dhdp->tx_multicast++;
 		if (ntoh16(eh->ether_type) == ETHER_TYPE_802_1X) {
-#ifdef DHD_LOSSLESS_ROAMING
-			uint8 prio = (uint8)PKTPRIO(pktbuf);
-
-			/* back up 802.1x's priority */
-			dhdp->prio_8021x = prio;
-#endif /* DHD_LOSSLESS_ROAMING */
 			atomic_inc(&dhd->pend_8021x_cnt);
 #if defined(DHD_8021X_DUMP)
 			dhd_dump_eapol_4way_message(pktdata, TRUE);
@@ -5160,9 +5152,6 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	if (dhd_watchdog_prio >= 0) {
 		/* Initialize watchdog thread */
 		PROC_START(dhd_watchdog_thread, dhd, &dhd->thr_wdt_ctl, 0, "dhd_watchdog_thread");
-		if (dhd->thr_wdt_ctl.thr_pid < 0) {
-			goto fail;
-		}
 
 	} else {
 		dhd->thr_wdt_ctl.thr_pid = -1;
@@ -5176,9 +5165,6 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	if (dhd_dpc_prio >= 0) {
 		/* Initialize DPC thread */
 		PROC_START(dhd_dpc_thread, dhd, &dhd->thr_dpc_ctl, 0, "dhd_dpc");
-		if (dhd->thr_dpc_ctl.thr_pid < 0) {
-			goto fail;
-		}
 	} else {
 #if defined(CUSTOMER_HW4) && defined(ARGOS_CPU_SCHEDULER)
 		if (!zalloc_cpumask_var(&dhd->pub.default_cpu_mask, GFP_KERNEL)) {
@@ -5211,9 +5197,6 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 		bzero(&dhd->pub.skbbuf[0], sizeof(void *) * MAXSKBPEND);
 		/* Initialize RXF thread */
 		PROC_START(dhd_rxf_thread, dhd, &dhd->thr_rxf_ctl, 0, "dhd_rxf");
-		if (dhd->thr_rxf_ctl.thr_pid < 0) {
-			goto fail;
-		}
 	}
 
 	dhd_state |= DHD_ATTACH_STATE_THREADS_CREATED;
@@ -5963,11 +5946,6 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	dhd_tdls_set_mode(dhd, false);
 #endif /* WLTDLS */
 	dhd->suspend_bcn_li_dtim = CUSTOM_SUSPEND_BCN_LI_DTIM;
-#ifdef ENABLE_MAX_DTIM_IN_SUSPEND
-	dhd->max_dtim_enable = TRUE;
-#else
-	dhd->max_dtim_enable = FALSE;
-#endif /* ENABLE_MAX_DTIM_IN_SUSPEND */
 	DHD_TRACE(("Enter %s\n", __FUNCTION__));
 	dhd->op_mode = 0;
 #ifdef CUSTOMER_HW4
@@ -6733,8 +6711,9 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 		bcmstrtok(&ptr, "\n", 0);
 		/* Print fw version info */
 		DHD_ERROR(("Firmware version = %s\n", buf));
+#ifdef DHD_LOG_DUMP
 		strncpy(fw_version, buf, FW_VER_STR_LEN);
-		fw_version[FW_VER_STR_LEN-1] = '\0';
+#endif /* DHD_LOG_DUMP */
 #if defined(BCMSDIO)
 		dhd_set_version_info(dhd, buf);
 #endif /* defined(BCMSDIO) */
@@ -7691,14 +7670,11 @@ dhd_reboot_callback(struct notifier_block *this, unsigned long code, void *unuse
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
 #if defined(CONFIG_DEFERRED_INITCALLS)
-#if defined(CONFIG_MACH_UNIVERSAL7420) || defined(CONFIG_SOC_EXYNOS8890) || \
-	defined(CONFIG_ARCH_MSM8996)
+#if defined(CONFIG_MACH_UNIVERSAL7420)
 deferred_module_init_sync(dhd_module_init);
 #else
 deferred_module_init(dhd_module_init);
-#endif /* CONFIG_MACH_UNIVERSAL7420 || CONFIG_SOC_EXYNOS8890 ||
-	* CONFIG_ARCH_MSM8996
-	*/
+#endif /* CONFIG_MACH_UNIVERSAL7420 */
 #elif defined(USE_LATE_INITCALL_SYNC)
 late_initcall_sync(dhd_module_init);
 #else
@@ -8412,30 +8388,6 @@ int net_os_set_suspend_bcn_li_dtim(struct net_device *dev, int val)
 
 	if (dhd)
 		dhd->pub.suspend_bcn_li_dtim = val;
-
-	return 0;
-}
-
-int net_os_set_max_dtim_enable(struct net_device *dev, int val)
-{
-	dhd_info_t *dhd = DHD_DEV_INFO(dev);
-
-	if (dhd) {
-#ifdef ENABLE_MAX_DTIM_IN_SUSPEND
-		DHD_ERROR(("%s: use MAX bcn_li_dtim in suspend %s\n",
-			__FUNCTION__, (val ? "Enable" : "Disable")));
-		if (val) {
-			dhd->pub.max_dtim_enable = TRUE;
-		} else {
-			dhd->pub.max_dtim_enable = FALSE;
-		}
-#else /* ENABLE_MAX_DTIM_IN_SUSPEND */
-		DHD_ERROR(("%s: max_dtim_enable always FALSE\n", __FUNCTION__));
-		dhd->pub.max_dtim_enable = FALSE;
-#endif /* ENABLE_MAX_DTIM_IN_SUSPEND */
-	} else {
-		return -1;
-	}
 
 	return 0;
 }
@@ -11036,7 +10988,6 @@ dhd_pktaudit_fail_cb(void)
 
 	DHD_ERROR(("%s: Got Pkt Id Audit failure \n", __FUNCTION__));
 	DHD_OS_WD_WAKE_LOCK(dhdp);
-	dhd_dump_to_kernelog(dhdp);
 	/* Load the dongle side dump to host memory and then BUG_ON() */
 	dhdp->memdump_enabled = DUMP_MEMONLY;
 	dhdp->memdump_type = DUMP_TYPE_PKTID_AUDIT_FAILURE;

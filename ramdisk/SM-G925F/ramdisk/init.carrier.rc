@@ -1,0 +1,16 @@
+import init.gps.rc
+
+on fs
+    #For cpefs partition
+    mkdir /cpefs 0771 radio system
+    chown radio system /cpefs
+    chmod 0771 /cpefs
+    restorecon_recursive /cpefs
+
+on boot
+# IMS stack for IMS
+service imsd /system/bin/imsd
+    class main
+    socket imsd stream 0660 system system
+    user root
+    group system radio net_raw inet net_admin readproc

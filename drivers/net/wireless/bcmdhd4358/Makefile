@@ -58,18 +58,14 @@ ifeq ($(BUS_IFACE_PCIE),y)
 
 endif
 
+
+
 #################
 # Common feature
 #################
 
 DHDCFLAGS += -DCUSTOMER_HW4
 DHDCFLAGS += -DWL_CFG80211
-
-# DMA64 suppports on 64bit Architecture
-ifeq ($(CONFIG_64BIT),y)
-DHDCFLAGS := $(filter-out -DBCMDMA32,$(DHDCFLAGS))
-DHDCFLAGS += -DBCMDMA64OSL
-endif
 
 # Debug
 DHDCFLAGS += -DSIMPLE_MAC_PRINT
@@ -80,8 +76,6 @@ DHDCFLAGS += -DDHD_TRACE_WAKE_LOCK
 DHDCFLAGS += -DBCMASSERT_LOG
 # Collect Current Assoc/Reject Status for Big Data logging
 DHDCFLAGS += -DDHD_ENABLE_BIGDATA_LOGGING
-# Enable SI utility error log
-DHDCFLAGS += -DSI_ERROR_ENFORCE
 
 # Print 8021X
 DHDCFLAGS += -DDHD_8021X_DUMP
@@ -110,7 +104,7 @@ DHDCFLAGS += -DENABLE_FW_ROAM_SUSPEND
 DHDCFLAGS += -DDHD_LOSSLESS_ROAMING
 
 # Enable Roam time thresh
-DHDCFLAGS += -DENABLE_MAX_DTIM_IN_SUSPEND
+# DHDCFLAGS += -DENABLE_MAX_DTIM_IN_SUSPEND
 DHDCFLAGS += -DCUSTOM_BCN_TIMEOUT_IN_SUSPEND=10
 DHDCFLAGS += -DCUSTOM_ROAM_TIME_THRESH_IN_SUSPEND=6000
 DHDCFLAGS += -DMAX_DTIM_ALLOWED_INTERVAL=925
@@ -194,9 +188,6 @@ DHDCFLAGS += -DFCC_PWR_LIMIT_2G
 
 # WFA Certification feature
 DHDCFLAGS += -DUSE_WFA_CERT_CONF
-
-# Customer scan timeout setting
-DHDCFLAGS += -DCUSTOMER_SCAN_TIMEOUT_SETTING
 
 ##############################
 # Android Platform Definition
@@ -296,15 +287,12 @@ endif
 # Disabled DHDTCPACK_SUPPRESS for T Project / Enabled for Zero Project
 ifeq ($(filter y,$(CONFIG_MACH_UNIVERSAL5433) $(CONFIG_ARCH_APQ8084)),y)
   DHDCFLAGS :=$(filter-out -DDHDTCPACK_SUPPRESS,$(DHDCFLAGS))
+# For enable temperature throttling feature at BCM4358A3
+#  DHDCFLAGS += -DENABLE_TEMP_THROTTLING
 endif
 
 ifeq ($(CONFIG_ARCH_MSM),y)
   DHDCFLAGS += -DSET_RPS_CPUS
-endif
-
-ifeq ($(CONFIG_ARCH_MSM8996),y)
-# Enable Dongle Isolation
-  DHDCFLAGS += -DDONGLE_ENABLE_ISOLATION
 endif
 
 # New Features
@@ -600,25 +588,13 @@ ifeq ($(GGSM_WIFI_5GHz_CHANNELS),true)
   DHDCFLAGS += -DCUSTOMER_SET_COUNTRY
 endif
 
-# Compiler option for specific platform
-ifeq ($(CONFIG_SOC_EXYNOS8890),y)
-  DHDCFLAGS += -Wno-date-time
-endif
-ifeq ($(CONFIG_ARCH_MSM8996),y)
-  DHDCFLAGS += -Wno-date-time
-endif
 
-# DTS Support
 ifeq ($(CONFIG_OF),y)
 ifneq ($(CONFIG_MACH_UNIVERSAL7420),)
 DHDCFLAGS += -DDHD_OF_SUPPORT
 DHDCFLAGS += -DBCMPCIE_OOB_HOST_WAKE
-# For enable temperature throttling feature at BCM4358A3
-DHDCFLAGS += -DENABLE_TEMP_THROTTLING
-DHDCFLAGS += -DTEMP_THROTTLE_CONTROL_BIT=0xD
 endif
-ifneq ($(CONFIG_SOC_EXYNOS8890),)
-DHDCFLAGS += -DDONGLE_ENABLE_ISOLATION
+ifneq ($(CONFIG_MACH_UNIVERSAL5433),)
 DHDCFLAGS += -DDHD_OF_SUPPORT
 DHDCFLAGS += -DBCMPCIE_OOB_HOST_WAKE
 endif
@@ -630,10 +606,6 @@ DHDCFLAGS += -DDHD_OF_SUPPORT
 endif
 ifneq ($(CONFIG_ARCH_MSM8994),)
 DHDCFLAGS += -DDHD_OF_SUPPORT
-endif
-ifneq ($(CONFIG_ARCH_MSM8996),)
-DHDCFLAGS += -DDHD_OF_SUPPORT
-DHDCFLAGS += -DBCMPCIE_OOB_HOST_WAKE
 endif
 endif # CONFIG_OF
 

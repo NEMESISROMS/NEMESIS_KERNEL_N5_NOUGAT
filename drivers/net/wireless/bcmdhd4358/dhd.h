@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd.h 635544 2016-05-04 07:47:16Z $
+ * $Id: dhd.h 610555 2016-01-07 07:41:14Z $
  */
 
 /****************
@@ -519,13 +519,11 @@ typedef struct dhd_pub {
 #endif
 #ifdef DHD_LOSSLESS_ROAMING
 	uint8 dequeue_prec_map;
-	uint8 prio_8021x;
 #endif
 #ifdef DHD_LOG_DUMP
 	struct dhd_log_dump_buf dld_buf;
 	unsigned int dld_enable;
 #endif /* DHD_LOG_DUMP */
-	bool max_dtim_enable;         /* use MAX bcn_li_dtim value in suspend mode */
 } dhd_pub_t;
 #if defined(CUSTOMER_HW4)
 #define MAX_RESCHED_CNT 600
@@ -1311,8 +1309,7 @@ int custom_rps_map_set(struct netdev_rx_queue *queue, char *buf, size_t len);
 void custom_rps_map_clear(struct netdev_rx_queue *queue);
 #define PRIMARY_INF 0
 #define VIRTUAL_INF 1
-#if defined(CONFIG_MACH_UNIVERSAL5433) || defined(CONFIG_MACH_UNIVERSAL7420) || \
-	defined(CONFIG_SOC_EXYNOS8890)
+#if defined(CONFIG_MACH_UNIVERSAL5433) || defined(CONFIG_MACH_UNIVERSAL7420)
 #define RPS_CPUS_MASK "10"
 #define RPS_CPUS_MASK_P2P "10"
 #define RPS_CPUS_MASK_IBSS "10"
@@ -1321,7 +1318,7 @@ void custom_rps_map_clear(struct netdev_rx_queue *queue);
 #define RPS_CPUS_MASK "6"
 #define RPS_CPUS_MASK_P2P "6"
 #define RPS_CPUS_MASK_IBSS "6"
-#endif /* CONFIG_MACH_UNIVERSAL5433 || CONFIG_MACH_UNIVERSAL7420 || CONFIG_SOC_EXYNOS8890 */
+#endif /* CONFIG_MACH_UNIVERSAL5433 || CONFIG_MACH_UNIVERSAL7420 */
 #endif /* (SET_RPS_CPUS || ARGOS_RPS_CPU_CTL) && CUSTOMER_HW4 */
 
 #ifdef CUSTOMER_HW4
@@ -1351,12 +1348,8 @@ extern int dhdpcie_set_suspend_resume(struct pci_dev *dev, bool state);
 void dhd_wk_lock_stats_dump(dhd_pub_t *dhdp);
 #endif
 
-extern int dhd_prot_debug_info_print(dhd_pub_t *dhd);
-
 #ifdef ENABLE_TEMP_THROTTLING
-#ifndef TEMP_THROTTLE_CONTROL_BIT
-#define TEMP_THROTTLE_CONTROL_BIT 0xD
-#endif
+#define TEMP_THROTTLE_CONTROL_BIT 0xf   //Enable all feature.
 #endif /* ENABLE_TEMP_THROTTLING */
 
 #endif /* _dhd_h_ */
