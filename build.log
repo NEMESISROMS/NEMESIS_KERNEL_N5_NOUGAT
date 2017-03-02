@@ -3,13 +3,13 @@
 START : FUNC_BUILD_KERNEL
 ==============================================
 
-build common config=exynos7420-zeroflte_nemesis_defconfig 
-build variant config=zeroflte 
-rm files in : /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dts/*.dtb
-rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dts/*.dtb': No such file or directory
-rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/dtb/*.dtb': No such file or directory
-rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-dtb': No such file or directory
-rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT/arch/arm64/boot/boot.img-zImage': No such file or directory
+build common config=exynos7420-zerolte_nemesis_defconfig 
+build variant config=zerolte 
+rm files in : /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dtb/*.dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-dtb': No such file or directory
+rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-zImage': No such file or directory
 Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
 #
 # configuration written to .config
@@ -19,22 +19,41 @@ Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
 INFO: CC is /home/geiti94/android/toolchain/aarch64-sabermod-7.0/bin/aarch64-gcc
   CHK     include/generated/uapi/linux/version.h
   CHK     include/generated/utsrelease.h
-  CC      scripts/mod/devicetable-offsets.s
   CALL    scripts/checksyscalls.sh
+  CC      scripts/mod/devicetable-offsets.s
   GEN     scripts/mod/devicetable-offsets.h
   HOSTCC  scripts/mod/file2alias.o
   HOSTLD  scripts/mod/modpost
   CHK     include/generated/compile.h
+  CC      kernel/panic.o
+  LD      kernel/built-in.o
 make[1]: Nothing to be done for 'dtbs'.
+  LINK    vmlinux
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  KSYM    .tmp_kallsyms1.o
+  KSYM    .tmp_kallsyms2.o
+  LD      vmlinux
+  SORTEX  vmlinux
+  SYSMAP  System.map
+  FIPS : Generating hmac of fmp and updating vmlinux... 
+HMAC-SHA256(builtime_bytes.bin)= 1504245f3e2a2921cc2eaa729c807f17c828ed587891f5a4d0f59a5ee14e3784
+  FIPS : Generating hmac of crypto and updating vmlinux... 
+HMAC-SHA256(builtime_bytes.bin)= 50fbe464e446c7f3dbb3f06fb74ad1a18d35406c2e7c3659649308ca4c808e62
   OBJCOPY arch/arm64/boot/Image
   GZIP    arch/arm64/boot/Image.gz
 Processing dts files...
-=> Processing: exynos7420-zeroflte_eur_open_06.dts
-=> Generating: exynos7420-zeroflte_eur_open_06.dtb
+=> Processing: exynos7420-zerolte_eur_open_06.dts
+=> Generating: exynos7420-zerolte_eur_open_06.dtb
 Warning (device_type_is_string): "device_type" property in /rgb is not a string
 Generating dtb.img...
-=> Found compatible entry: samsung,ZERO-F LTE EUR EVT1 mPOP,r06
-    (chip: 7420, hw_rev: 10, hw_rev_end: 11)
+=> Found compatible entry: samsung,ZERO LTE EUR EVT1 mPOP,r05
+    (chip: 7420, hw_rev: 8, hw_rev_end: 9)
 Done.
 
 =================================
@@ -65,4 +84,4 @@ dtb = boot.img-dtb
 Building image...
  
 Done!
-Total compile time is 21 seconds
+Total compile time is 61 seconds

@@ -144,7 +144,7 @@ FUNC_BUILD_RAMDISK()
 		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G920F/split_img/boot.img-dtb
 		cd $RDIR/ramdisk/SM-G920F
 		./repackimg.sh
-		echo SEANDROIDENFORCE >> image-new.img
+		echo SEANDROIDENFORCE >> boots6f.img
 		;;
 	zerolte)
 		rm -f $RDIR/ramdisk/SM-G925F/split_img/boot.img-zImage
