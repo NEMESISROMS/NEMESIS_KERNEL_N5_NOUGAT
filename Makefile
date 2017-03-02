@@ -195,7 +195,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 #ARCH		?= $(SUBARCH)
 #CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
 ARCH            ?= arm64
-CROSS_COMPILE   ?= /home/geiti94/android/toolchain/aarch64-sabermod-7.0/bin/aarch64-
+CROSS_COMPILE   ?= /home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -381,15 +381,15 @@ LINUXINCLUDE    := \
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+KBUILD_CFLAGS   :=  -w -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security -Wno-logical-not-parentheses \
+		   -Werror-implicit-function-declaration -fno-pic \
+		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
-		   -fno-diagnostics-show-caret -fno-pic \
-		   -Wno-unused-variable \
-		   -mtune=cortex-a57.cortex-a53 \
-		   -std=gnu89
+		   -fdiagnostics-show-option -Werror \
+		   -march=armv8-a+crc \
+		   -mcpu=cortex-a57.cortex-a53 -mtune=cortex-a57.cortex-a53 \
+		   -std=gnu89 \
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
