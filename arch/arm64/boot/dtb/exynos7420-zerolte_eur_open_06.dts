@@ -1,18 +1,18 @@
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
 # 1 "<built-in>"
 # 1 "<command-line>"
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
-# 12 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
+# 12 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts"
 /dts-v1/;
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi" 1
-# 12 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420.dtsi" 1
-# 16 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420.dtsi"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi" 1
+# 12 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420.dtsi" 1
+# 16 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420.dtsi"
 /memreserve/ 0xFE800000 0x1800000;
-# 1 "/home/geiti94/android/kernel/test/include/dt-bindings/clock/exynos7420.h" 1
-# 18 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420.dtsi" 2
-# 1 "/home/geiti94/android/kernel/test/include/dt-bindings/sysmmu/sysmmu.h" 1
-# 19 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420.dtsi" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/include/dt-bindings/clock/exynos7420.h" 1
+# 18 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420.dtsi" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/include/dt-bindings/sysmmu/sysmmu.h" 1
+# 19 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420.dtsi" 2
 /include/ "exynos7420-pinctrl.dtsi"
 /include/ "exynos7420-noc.dtsi"
 / {
@@ -3431,7 +3431,7 @@
   const_lpki = <0 20948 41896 62844 83792 104740>;
  };
 };
-# 13 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi" 2
+# 13 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi" 2
 
 / {
  model = "Samsung UNIVERSAL7420 board based on EXYNOS7420";
@@ -4781,7 +4781,7 @@
    companion = <1>;
    ois = <0>;
   };
-# 1384 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
+# 1384 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
   fimc_is_dvfs {
 
    table1 {
@@ -5382,7 +5382,7 @@
  argos {
   compatible = "samsung,argos";
   #address-cells = <1>;
-# 2004 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
+# 2004 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
   boot_device@1 {
    net_boost,label="IPC";
    net_boost,node="rmnet0 rmnet1 rmnet2 rmnet3 rmnet4 rmnet5 rmnet6 rmnet7";
@@ -5393,7 +5393,7 @@
     100 0 0 1500000 0 825000 100000 0 1 0
     >;
   };
-# 2023 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
+# 2023 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zero_common.dtsi"
   boot_device@2 {
    net_boost,label="UFS";
    net_boost,node="";
@@ -5611,9 +5611,9 @@
   gpios = <&gpr3 3 0>;
  };
 };
-# 14 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_battery_05.dtsi" 1
-# 12 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_battery_05.dtsi"
+# 14 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_battery_05.dtsi" 1
+# 12 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_battery_05.dtsi"
 / {
  i2c@6c{
   compatible = "i2c-gpio";
@@ -5977,11 +5977,11 @@
   battery,chg_float_voltage = <4350>;
  };
 };
-# 15 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi" 1
-# 12 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi"
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos_gpio_config_macros.dtsi" 1
-# 13 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi" 2
+# 15 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi" 1
+# 12 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos_gpio_config_macros.dtsi" 1
+# 13 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_gpio_06.dtsi" 2
 
 
 &pinctrl_1 {
@@ -6371,11 +6371,11 @@
   gpr3-7 { samsung,pins = "gpr3-7"; samsung,pin-con-pdn = <2>; samsung,pin-pud-pdn = <1>; };
  };
 };
-# 16 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi" 1
-# 12 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi"
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/modem-ss333-pdata.dtsi" 1
-# 14 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/modem-ss333-pdata.dtsi"
+# 16 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi" 1
+# 12 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi"
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/modem-ss333-pdata.dtsi" 1
+# 14 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/modem-ss333-pdata.dtsi"
 / {
  mif_pdata {
   compatible = "sec_modem,modem_pdata";
@@ -6617,7 +6617,7 @@
   };
  };
 };
-# 13 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi" 2
+# 13 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_modem-shannon.dtsi" 2
 
 
 
@@ -6800,9 +6800,9 @@
   };
  };
 };
-# 17 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_fingerprint-sensor_00.dtsi" 1
-# 14 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_fingerprint-sensor_00.dtsi"
+# 17 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_fingerprint-sensor_00.dtsi" 1
+# 14 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_fingerprint-sensor_00.dtsi"
 / {
  pinctrl@10580000 {
   btp_irq: btp-irq {
@@ -6891,9 +6891,9 @@
   };
  };
 };
-# 18 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
-# 1 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_mst.dtsi" 1
-# 13 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_mst.dtsi"
+# 18 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 1 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_mst.dtsi" 1
+# 13 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_mst.dtsi"
 / {
  sec-mst{
   compatible = "sec-mst";
@@ -6929,7 +6929,7 @@
   };
  };
 };
-# 19 "/home/geiti94/android/kernel/test/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
+# 19 "/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/exynos7420-zerolte_eur_open_06.dts" 2
 / {
  model = "Samsung ZERO LTE EUR rev05 board based on Exynos7420(EVT1), mPOP";
  model_info-chip = <7420>;
