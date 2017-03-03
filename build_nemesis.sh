@@ -1,7 +1,7 @@
 #!/bin/bash
 # kernel build script by Tkkg1994 v0.6 (optimized from apq8084 kernel source)
 
-export MODEL=noblelte
+export MODEL=zeroflte
 export ARCH=arm64
 export BUILD_CROSS_COMPILE=/home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-
 export BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
