@@ -21,10 +21,10 @@ then
 	KERNEL_DEFCONFIG=exynos7420-noblelte_nemesis_defconfig
 else if [ $MODEL = zeroflte ]
 then
-	KERNEL_DEFCONFIG=exynos7420-zeroflte_defconfig
+	KERNEL_DEFCONFIG=exynos7420-zeroflte_nemesis_defconfig
 else if [ $MODEL = zerolte ]
 then
-	KERNEL_DEFCONFIG=exynos7420-zerolte_defconfig
+	KERNEL_DEFCONFIG=exynos7420-zerolte_nemesis_defconfig
 else [ $MODEL = zenlte ]
 	KERNEL_DEFCONFIG=exynos7420-zenlte_defconfig
 fi
@@ -56,10 +56,10 @@ FUNC_BUILD_DTIMAGE_TARGET()
 		DTSFILES="exynos7420-noblelte_eur_open_09"
 		;;
 	zeroflte)
-		DTSFILES=""
+		DTSFILES="exynos7420-zeroflte_eur_open_06"
 		;;
 	zerolte)
-		DTSFILES=""
+		DTSFILES="exynos7420-zerolte_eur_open_06"
 		;;
 	zenlte)
 		DTSFILES=""
@@ -135,7 +135,7 @@ FUNC_BUILD_RAMDISK()
 		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-N920F/split_img/boot.img-dtb
 		cd $RDIR/ramdisk/SM-N920F
 		./repackimg.sh
-		echo SEANDROIDENFORCE >> image-new.img
+		echo SEANDROIDENFORCE >> bootn5.img
 		;;
 	zeroflte)
 		rm -f $RDIR/ramdisk/SM-G920F/split_img/boot.img-zImage
@@ -144,7 +144,7 @@ FUNC_BUILD_RAMDISK()
 		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G920F/split_img/boot.img-dtb
 		cd $RDIR/ramdisk/SM-G920F
 		./repackimg.sh
-		echo SEANDROIDENFORCE >> image-new.img
+		echo SEANDROIDENFORCE >> boots6f.img
 		;;
 	zerolte)
 		rm -f $RDIR/ramdisk/SM-G925F/split_img/boot.img-zImage
@@ -153,7 +153,7 @@ FUNC_BUILD_RAMDISK()
 		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G925F/split_img/boot.img-dtb
 		cd $RDIR/ramdisk/SM-G925F
 		./repackimg.sh
-		echo SEANDROIDENFORCE >> image-new.img
+		echo SEANDROIDENFORCE >> boots6e.img
 		;;
 	zenlte)
 		rm -f $RDIR/ramdisk/SM-G928F/split_img/boot.img-zImage
@@ -162,7 +162,7 @@ FUNC_BUILD_RAMDISK()
 		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G928F/split_img/boot.img-dtb
 		cd $RDIR/ramdisk/SM-G928F
 		./repackimg.sh
-		echo SEANDROIDENFORCE >> image-new.img
+		echo SEANDROIDENFORCE >> boots6ep.img
 		;;
 	*)
 		echo "Unknown device: $MODEL"
