@@ -3,7 +3,7 @@
 
 export MODEL=noblelte
 export ARCH=arm64
-export BUILD_CROSS_COMPILE=/home/geiti94/android/toolchain/aarch64-sabermod-7.0/bin/aarch64-
+export BUILD_CROSS_COMPILE=/home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-
 export BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
 
 RDIR=$(pwd)
@@ -53,7 +53,7 @@ FUNC_BUILD_DTIMAGE_TARGET()
 
 	case $MODEL in
 	noblelte)
-		DTSFILES="exynos7420-noblelte_usa_09"
+		DTSFILES="exynos7420-noblelte_eur_open_09"
 		;;
 	zeroflte)
 		DTSFILES=""
