@@ -1,7 +1,7 @@
 #!/bin/bash
 # kernel build script by Tkkg1994 v0.6 (optimized from apq8084 kernel source)
 
-export MODEL=zenlte
+export MODEL=zeroltetmo
 export ARCH=arm64
 export BUILD_CROSS_COMPILE=/home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-
 export BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
@@ -25,8 +25,25 @@ then
 else if [ $MODEL = zerolte ]
 then
 	KERNEL_DEFCONFIG=exynos7420-zerolte_nemesis_defconfig
+else if [ $MODEL = zerofltetmo ]
+then
+	KERNEL_DEFCONFIG=exynos7420-zerofltetmo_nemesis_defconfig
+else if [ $MODEL = zeroltetmo ]
+then
+	KERNEL_DEFCONFIG=exynos7420-zeroltetmo_nemesis_defconfig
+else if [ $MODEL = nobleltetmo ]
+then
+	KERNEL_DEFCONFIG=exynos7420-nobleltetmo_nemesis_defconfig
+else if [ $MODEL = zenltetmo ]
+then
+	KERNEL_DEFCONFIG=exynos7420-zenltetmo_nemesis_defconfig
+
 else [ $MODEL = zenlte ]
 	KERNEL_DEFCONFIG=exynos7420-zenlte_nemesis_defconfig
+fi
+fi
+fi
+fi
 fi
 fi
 fi
@@ -60,6 +77,18 @@ FUNC_BUILD_DTIMAGE_TARGET()
 		;;
 	zerolte)
 		DTSFILES="exynos7420-zerolte_eur_open_06"
+		;;
+	zerofltetmo)
+		DTSFILES="exynos7420-zeroflte_usa_05"
+		;;
+	zeroltetmo)
+		DTSFILES="exynos7420-zerolte_usa_06"
+		;;
+	nobleltetmo)
+		DTSFILES="exynos7420-noblelte_usa_09"
+		;;
+	zenltetmo)
+		DTSFILES="exynos7420-zenlte_usa_09"
 		;;
 	zenlte)
 		DTSFILES="exynos7420-zenlte_eur_open_09"
@@ -154,6 +183,42 @@ FUNC_BUILD_RAMDISK()
 		cd $RDIR/ramdisk/SM-G925F
 		./repackimg.sh
 		echo SEANDROIDENFORCE >> boots6e.img
+		;;
+	zerofltetmo)
+		rm -f $RDIR/ramdisk/SM-G920T/split_img/boot.img-zImage
+		rm -f $RDIR/ramdisk/SM-G920T/split_img/boot.img-dtb
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-zImage $RDIR/ramdisk/SM-G920T/split_img/boot.img-zImage
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G920T/split_img/boot.img-dtb
+		cd $RDIR/ramdisk/SM-G920T
+		./repackimg.sh
+		echo SEANDROIDENFORCE >> boots6ftmo.img
+		;;
+	zeroltetmo)
+		rm -f $RDIR/ramdisk/SM-G925T/split_img/boot.img-zImage
+		rm -f $RDIR/ramdisk/SM-G925T/split_img/boot.img-dtb
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-zImage $RDIR/ramdisk/SM-G925T/split_img/boot.img-zImage
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G925T/split_img/boot.img-dtb
+		cd $RDIR/ramdisk/SM-G925T
+		./repackimg.sh
+		echo SEANDROIDENFORCE >> boots6etmo.img
+		;;
+	nobleltetmo)
+		rm -f $RDIR/ramdisk/SM-N920T/split_img/boot.img-zImage
+		rm -f $RDIR/ramdisk/SM-N920T/split_img/boot.img-dtb
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-zImage $RDIR/ramdisk/SM-N920T/split_img/boot.img-zImage
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-N920T/split_img/boot.img-dtb
+		cd $RDIR/ramdisk/SM-N920T
+		./repackimg.sh
+		echo SEANDROIDENFORCE >> bootn5tmo.img
+		;;
+	zenltetmo)
+		rm -f $RDIR/ramdisk/SM-G928T/split_img/boot.img-zImage
+		rm -f $RDIR/ramdisk/SM-G928T/split_img/boot.img-dtb
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-zImage $RDIR/ramdisk/SM-G928T/split_img/boot.img-zImage
+		mv -f $RDIR/arch/$ARCH/boot/boot.img-dtb $RDIR/ramdisk/SM-G928T/split_img/boot.img-dtb
+		cd $RDIR/ramdisk/SM-G928T
+		./repackimg.sh
+		echo SEANDROIDENFORCE >> boots6eptmo.img
 		;;
 	zenlte)
 		rm -f $RDIR/ramdisk/SM-G928F/split_img/boot.img-zImage

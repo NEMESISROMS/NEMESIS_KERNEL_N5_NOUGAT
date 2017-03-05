@@ -3,24 +3,24 @@
 START : FUNC_BUILD_KERNEL
 ==============================================
 
-build common config=exynos7420-zenlte_nemesis_defconfig 
-build variant config=zenlte 
+build common config=exynos7420-zeroltetmo_nemesis_defconfig 
+build variant config=zeroltetmo 
 rm files in : /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb': No such file or directory
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-dtb': No such file or directory
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-zImage': No such file or directory
 Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:281:warning: override: reassigning to symbol DEFAULT_VR
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:282:warning: override: reassigning to symbol DEFAULT_FIOPS
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:283:warning: override: reassigning to symbol DEFAULT_CFQ
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:284:warning: override: reassigning to symbol DEFAULT_NOOP
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:285:warning: override: reassigning to symbol DEFAULT_TRIPNDROID
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:286:warning: override: reassigning to symbol DEFAULT_SIOPLUS
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:287:warning: override: reassigning to symbol DEFAULT_SIO
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:288:warning: override: reassigning to symbol DEFAULT_FIFO
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:289:warning: override: reassigning to symbol DEFAULT_ZEN
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:568:warning: override: reassigning to symbol CPU_FREQ_DEFAULT_GOV_INTERACTIVE
-arch/arm64/configs/exynos7420-zenlte_nemesis_defconfig:568:warning: override: CPU_FREQ_DEFAULT_GOV_INTERACTIVE changes choice state
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:281:warning: override: reassigning to symbol DEFAULT_VR
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:282:warning: override: reassigning to symbol DEFAULT_FIOPS
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:283:warning: override: reassigning to symbol DEFAULT_CFQ
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:284:warning: override: reassigning to symbol DEFAULT_NOOP
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:285:warning: override: reassigning to symbol DEFAULT_TRIPNDROID
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:286:warning: override: reassigning to symbol DEFAULT_SIOPLUS
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:287:warning: override: reassigning to symbol DEFAULT_SIO
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:288:warning: override: reassigning to symbol DEFAULT_FIFO
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:289:warning: override: reassigning to symbol DEFAULT_ZEN
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:565:warning: override: reassigning to symbol CPU_FREQ_DEFAULT_GOV_INTERACTIVE
+arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:565:warning: override: CPU_FREQ_DEFAULT_GOV_INTERACTIVE changes choice state
 #
 # configuration written to .config
 #
@@ -29,114 +29,25 @@ Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
 INFO: CC is /home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-gcc
   CHK     include/generated/uapi/linux/version.h
   CHK     include/generated/utsrelease.h
-  UPD     include/generated/utsrelease.h
   CC      scripts/mod/devicetable-offsets.s
   CALL    scripts/checksyscalls.sh
   GEN     scripts/mod/devicetable-offsets.h
   HOSTCC  scripts/mod/file2alias.o
   HOSTLD  scripts/mod/modpost
   CHK     include/generated/compile.h
-  CC      init/version.o
-  CC      kernel/sys.o
   LD      firmware/built-in.o
-  LD      init/built-in.o
-  CC      drivers/base/firmware_class.o
-  LD      drivers/base/built-in.o
 make[1]: Nothing to be done for 'dtbs'.
-  CC      sound/soc/codecs/max98504a.o
-  CC      kernel/trace/trace.o
-  LD      sound/soc/codecs/snd-soc-arizona.o
-  LD      sound/soc/codecs/snd-soc-clearwater.o
-  LD      sound/soc/codecs/snd-soc-wm-adsp.o
-  LD      sound/soc/codecs/snd-soc-dummy.o
-  LD      sound/soc/codecs/snd-soc-max98504a.o
-  LD      sound/soc/codecs/snd-soc-max98505.o
-  LD      sound/soc/codecs/snd-soc-maxim-dsm.o
-  LD      sound/soc/codecs/snd-soc-maxim-dsm-cal.o
-  CC      sound/soc/samsung/noble_arizona.o
-  LD      sound/soc/codecs/built-in.o
-  LD      kernel/trace/built-in.o
-  LD      sound/soc/samsung/snd-soc-s3c24xx.o
-  LD      sound/soc/samsung/snd-soc-i2s.o
-  LD      sound/soc/samsung/snd-soc-lpass.o
-  LD      sound/soc/samsung/snd-soc-compr.o
-  LD      sound/soc/samsung/snd-soc-eax-dai.o
+  LD      drivers/input/keyboard/built-in.o
   LD      drivers/input/built-in.o
-  LD      sound/soc/samsung/snd-soc-eax-dma.o
-  LD      sound/soc/samsung/snd-soc-esa-sa-effect.o
-  LD      sound/soc/samsung/snd-soc-noble-arizona.o
-  LD      sound/soc/samsung/built-in.o
-  LD      sound/soc/built-in.o
-  CC      drivers/muic/max77833-muic.o
-  CC      drivers/pinctrl/pinctrl-samsung.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-device-companion.o
-  LD      sound/built-in.o
-  LD      kernel/built-in.o
-  CC      drivers/pinctrl/pinctrl-exynos.o
-  LD      drivers/muic/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-companion.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-core.o
-  LD      drivers/pinctrl/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-debug.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-mem.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-framemgr.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-groupmgr.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-resourcemgr.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-sensor.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-3aa.o
-  CC      drivers/sensorhub/brcm/ssp_firmware.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-3aac.o
-  CC      drivers/sensorhub/brcm/bbdpl/bbd_patch.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-3aap.o
-  LD      drivers/sensorhub/brcm/bbdpl/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-isp.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-ispc.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-ispp.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-dis.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-scc.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-video-scp.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-subdev-ctrl.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-device-csi.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-device-flite.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-device-sensor.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-device-ischain.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-interface.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-time.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-dvfs.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-dt.o
-  LD      drivers/sensorhub/brcm/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/fimc-is-clk-gate.o
-  CC      drivers/media/platform/exynos/fimc-is2/ischain/fimc-is-v4_0_0/fimc-is-hw-pwr.o
-  CC      drivers/media/platform/exynos/fimc-is2/sensor/csi/fimc-is-hw-csi-v3_4.o
-  CC      drivers/media/platform/exynos/fimc-is2/sensor/module/fimc-is-device-2p2.o
-  CC      drivers/media/platform/exynos/fimc-is2/ischain/fimc-is-v4_0_0/fimc-is-hw-chain.o
-  CC      drivers/media/platform/exynos/fimc-is2/sensor/module/fimc-is-device-imx240.o
-  LD      drivers/media/platform/exynos/fimc-is2/sensor/csi/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/sensor/module/fimc-is-device-4e6.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-spi.o
-  LD      drivers/media/platform/exynos/fimc-is2/ischain/fimc-is-v4_0_0/built-in.o
-  LD      drivers/media/platform/exynos/fimc-is2/ischain/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-i2c.o
-  LD      drivers/media/platform/exynos/fimc-is2/fimc-is.o
-  CC      drivers/media/platform/exynos/fimc-is2/sensor/module/fimc-is-device-4e6-c2.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-sec-define.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-sysfs.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-device-from.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-companion-dt.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-pmic.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-companion_c2.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-device-ois.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-device-af.o
-  LD      drivers/media/platform/exynos/fimc-is2/sensor/module/built-in.o
-  LD      drivers/media/platform/exynos/fimc-is2/sensor/built-in.o
-  CC      drivers/media/platform/exynos/fimc-is2/vendor/fimc-is-device-eeprom.o
-  LD      drivers/sensorhub/built-in.o
-  LD      drivers/media/platform/exynos/fimc-is2/vendor/built-in.o
-  LD      drivers/media/platform/exynos/fimc-is2/built-in.o
-  LD      drivers/media/platform/exynos/built-in.o
-  LD      drivers/media/platform/built-in.o
-  LD      drivers/media/built-in.o
+  CC      drivers/video/exynos/decon/panels/dsim_panel.o
+  CC      drivers/video/exynos/decon/panels/dimming_core.o
+  CC      drivers/video/exynos/decon/panels/lcd_sysfs.o
+  CC      drivers/video/exynos/decon/panels/s6e3hf2_wqhd_lcd_ctrl.o
+  CC      drivers/video/exynos/decon/panels/dsim_backlight.o
+  LD      drivers/video/exynos/decon/panels/built-in.o
+  LD      drivers/video/exynos/decon/built-in.o
+  LD      drivers/video/exynos/built-in.o
+  LD      drivers/video/built-in.o
   LD      drivers/built-in.o
   LINK    vmlinux
   LD      vmlinux.o
@@ -152,26 +63,46 @@ make[1]: Nothing to be done for 'dtbs'.
   SORTEX  vmlinux
   SYSMAP  System.map
   FIPS : Generating hmac of fmp and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= 887aabce9e42322e6924c37ad21e471f336a4a0e25c12b494a0e7c6b46743791
+HMAC-SHA256(builtime_bytes.bin)= b1db68321e27e7f65ce2f184c5090e427d0adebca0e6950126ebc166d2dca91c
   FIPS : Generating hmac of crypto and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= a737e423c8d9d7fe4c7e6d3fa2672074b770afdb45a0261fc74028bf088ffac4
+HMAC-SHA256(builtime_bytes.bin)= 40418c1345e86d5c9355c49bc698766a94147a69f8a40a2a8ac6b2c5bee78568
   OBJCOPY arch/arm64/boot/Image
   GZIP    arch/arm64/boot/Image.gz
 Processing dts files...
-=> Processing: exynos7420-zenlte_eur_open_09.dts
-=> Generating: exynos7420-zenlte_eur_open_09.dtb
+=> Processing: exynos7420-zerolte_usa_06.dts
+=> Generating: exynos7420-zerolte_usa_06.dtb
 Warning (device_type_is_string): "device_type" property in /rgb is not a string
 Generating dtb.img...
-=> Found compatible entry: samsung,ZEN LTE EUR,rev0.4
-    (chip: 7420, hw_rev: 9, hw_rev_end: 255)
+=> Found compatible entry: samsung,ZERO LTE USA EVT1 mPOP,r05
+    (chip: 7420, hw_rev: 10, hw_rev_end: 10)
 Done.
 
 =================================
 END   : FUNC_BUILD_KERNEL
 =================================
 
-mv: cannot move '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-zImage' to '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/ramdisk/SM-G928F/split_img/boot.img-zImage': No such file or directory
-mv: cannot move '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-dtb' to '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/ramdisk/SM-G928F/split_img/boot.img-dtb': No such file or directory
-./build_nemesis.sh: line 163: cd: /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/ramdisk/SM-G928F: No such file or directory
-./build_nemesis.sh: line 164: ./repackimg.sh: No such file or directory
-Total compile time is 63 seconds
+[3J[H[2J 
+Android Image Kitchen - RepackImg Script
+by osm0sis @ xda-developers
+ 
+Warning: Overwriting existing files!
+ 
+Packing ramdisk...
+ 
+Using compression: gzip
+ 
+Getting build information...
+kernel = boot.img-zImage
+cmdline = 
+board = SYSMAGIC003KU
+base = 10000000
+pagesize = 2048
+kernel_offset = 00008000
+ramdisk_offset = 01000000
+tags_offset = 00000100
+dtb = boot.img-dtb
+ 
+Building image...
+ 
+Done!
+Total compile time is 51 seconds
