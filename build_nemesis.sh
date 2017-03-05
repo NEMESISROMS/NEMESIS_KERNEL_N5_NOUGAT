@@ -1,7 +1,7 @@
 #!/bin/bash
 # kernel build script by Tkkg1994 v0.6 (optimized from apq8084 kernel source)
 
-export MODEL=zeroflte
+export MODEL=zenlte
 export ARCH=arm64
 export BUILD_CROSS_COMPILE=/home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-gnu-
 export BUILD_JOB_NUMBER=`grep processor /proc/cpuinfo|wc -l`
@@ -26,7 +26,7 @@ else if [ $MODEL = zerolte ]
 then
 	KERNEL_DEFCONFIG=exynos7420-zerolte_nemesis_defconfig
 else [ $MODEL = zenlte ]
-	KERNEL_DEFCONFIG=exynos7420-zenlte_defconfig
+	KERNEL_DEFCONFIG=exynos7420-zenlte_nemesis_defconfig
 fi
 fi
 fi
@@ -62,7 +62,7 @@ FUNC_BUILD_DTIMAGE_TARGET()
 		DTSFILES="exynos7420-zerolte_eur_open_06"
 		;;
 	zenlte)
-		DTSFILES=""
+		DTSFILES="exynos7420-zenlte_eur_open_09"
 		;;
 	*)
 		echo "Unknown device: $MODEL"
