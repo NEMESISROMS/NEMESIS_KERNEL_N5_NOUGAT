@@ -3,24 +3,24 @@
 START : FUNC_BUILD_KERNEL
 ==============================================
 
-build common config=exynos7420-zeroltetmo_nemesis_defconfig 
-build variant config=zeroltetmo 
+build common config=exynos7420-zerolte_nemesis_defconfig 
+build variant config=zerolte 
 rm files in : /home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/dts/*.dtb': No such file or directory
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-dtb': No such file or directory
 rm: cannot remove '/home/geiti94/android/kernel/NEMESIS_KERNEL_N5_NOUGAT_Backup/arch/arm64/boot/boot.img-zImage': No such file or directory
 Kconfig:15:warning: environment variable ANDROID_MAJOR_VERSION undefined
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:281:warning: override: reassigning to symbol DEFAULT_VR
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:282:warning: override: reassigning to symbol DEFAULT_FIOPS
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:283:warning: override: reassigning to symbol DEFAULT_CFQ
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:284:warning: override: reassigning to symbol DEFAULT_NOOP
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:285:warning: override: reassigning to symbol DEFAULT_TRIPNDROID
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:286:warning: override: reassigning to symbol DEFAULT_SIOPLUS
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:287:warning: override: reassigning to symbol DEFAULT_SIO
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:288:warning: override: reassigning to symbol DEFAULT_FIFO
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:289:warning: override: reassigning to symbol DEFAULT_ZEN
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:565:warning: override: reassigning to symbol CPU_FREQ_DEFAULT_GOV_INTERACTIVE
-arch/arm64/configs/exynos7420-zeroltetmo_nemesis_defconfig:565:warning: override: CPU_FREQ_DEFAULT_GOV_INTERACTIVE changes choice state
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:281:warning: override: reassigning to symbol DEFAULT_VR
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:282:warning: override: reassigning to symbol DEFAULT_FIOPS
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:283:warning: override: reassigning to symbol DEFAULT_CFQ
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:284:warning: override: reassigning to symbol DEFAULT_NOOP
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:285:warning: override: reassigning to symbol DEFAULT_TRIPNDROID
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:286:warning: override: reassigning to symbol DEFAULT_SIOPLUS
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:287:warning: override: reassigning to symbol DEFAULT_SIO
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:288:warning: override: reassigning to symbol DEFAULT_FIFO
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:289:warning: override: reassigning to symbol DEFAULT_ZEN
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:565:warning: override: reassigning to symbol CPU_FREQ_DEFAULT_GOV_INTERACTIVE
+arch/arm64/configs/exynos7420-zerolte_nemesis_defconfig:565:warning: override: CPU_FREQ_DEFAULT_GOV_INTERACTIVE changes choice state
 #
 # configuration written to .config
 #
@@ -35,19 +35,9 @@ INFO: CC is /home/geiti94/android/toolchain/gcc-linaro-6.3.1/bin/aarch64-linux-g
   HOSTCC  scripts/mod/file2alias.o
   HOSTLD  scripts/mod/modpost
   CHK     include/generated/compile.h
-  LD      firmware/built-in.o
+  CC      drivers/cpufreq/cpufreq_interactive.o
 make[1]: Nothing to be done for 'dtbs'.
-  LD      drivers/input/keyboard/built-in.o
-  LD      drivers/input/built-in.o
-  CC      drivers/video/exynos/decon/panels/dsim_panel.o
-  CC      drivers/video/exynos/decon/panels/dimming_core.o
-  CC      drivers/video/exynos/decon/panels/lcd_sysfs.o
-  CC      drivers/video/exynos/decon/panels/s6e3hf2_wqhd_lcd_ctrl.o
-  CC      drivers/video/exynos/decon/panels/dsim_backlight.o
-  LD      drivers/video/exynos/decon/panels/built-in.o
-  LD      drivers/video/exynos/decon/built-in.o
-  LD      drivers/video/exynos/built-in.o
-  LD      drivers/video/built-in.o
+  LD      drivers/cpufreq/built-in.o
   LD      drivers/built-in.o
   LINK    vmlinux
   LD      vmlinux.o
@@ -63,18 +53,18 @@ make[1]: Nothing to be done for 'dtbs'.
   SORTEX  vmlinux
   SYSMAP  System.map
   FIPS : Generating hmac of fmp and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= b1db68321e27e7f65ce2f184c5090e427d0adebca0e6950126ebc166d2dca91c
+HMAC-SHA256(builtime_bytes.bin)= 6c85ebb5de58a618c4607ec1d41b87cc7c8b1ca64336d8efe288e452234b254f
   FIPS : Generating hmac of crypto and updating vmlinux... 
-HMAC-SHA256(builtime_bytes.bin)= 40418c1345e86d5c9355c49bc698766a94147a69f8a40a2a8ac6b2c5bee78568
+HMAC-SHA256(builtime_bytes.bin)= 4fee76f1991fffbec87f385e8d9d72456a5cfa6ab3d9fe51112277ddb6515dfd
   OBJCOPY arch/arm64/boot/Image
   GZIP    arch/arm64/boot/Image.gz
 Processing dts files...
-=> Processing: exynos7420-zerolte_usa_06.dts
-=> Generating: exynos7420-zerolte_usa_06.dtb
+=> Processing: exynos7420-zerolte_eur_open_06.dts
+=> Generating: exynos7420-zerolte_eur_open_06.dtb
 Warning (device_type_is_string): "device_type" property in /rgb is not a string
 Generating dtb.img...
-=> Found compatible entry: samsung,ZERO LTE USA EVT1 mPOP,r05
-    (chip: 7420, hw_rev: 10, hw_rev_end: 10)
+=> Found compatible entry: samsung,ZERO LTE EUR EVT1 mPOP,r05
+    (chip: 7420, hw_rev: 8, hw_rev_end: 9)
 Done.
 
 =================================
@@ -105,4 +95,4 @@ dtb = boot.img-dtb
 Building image...
  
 Done!
-Total compile time is 51 seconds
+Total compile time is 27 seconds
