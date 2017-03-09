@@ -911,10 +911,11 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
 	if (read_dt_cmdline)
 		p = of_get_flat_dt_prop(node, "bootargs", &l);
 
-	p = del_cmdline(p, "androidboot.boot.veritymode=enforcing");
-	p = del_cmdline(p, "androidboot.boot.verifiedbootstate=green");
+	p = add_cmdline(p, "androidboot.boot.veritymode=enforcing");
+	p = add_cmdline(p, "androidboot.boot.verifiedbootstate=green");
 	p = add_cmdline(p, "androidboot.boot.flash.locked=1");
-	p = del_cmdline(p, "androidboot.boot.ddrinfo=00000001");
+	p = add_cmdline(p, "androidboot.boot.ddrinfo=00000001");
+	p = add_cmdline(p, "androidboot.crypto.state=encrypted");
 
 	if (p != NULL && l > 0) {
 		if (concat_cmdline) {
